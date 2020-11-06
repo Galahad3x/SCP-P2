@@ -43,7 +43,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Secuencial_Java" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -72,6 +72,10 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
+    <state x="260" y="278" key="FileChooserDialogImpl" timestamp="1604681229466">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="260" y="278" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604681229466" />
     <state x="0" y="165" key="SettingsEditor" timestamp="1604679646842">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
