@@ -14,7 +14,7 @@ public class Manfutc {
             mercat.LlegirFitxerJugadors(argvs[1]);
 
         } catch (Exception e) {
-            System.out.println("ERROR!");
+            System.out.println("ERROR: Error reading the file.");
         }
 
 

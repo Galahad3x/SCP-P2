@@ -10,19 +10,18 @@ public class Mercat {
     int NDavanters;
 
     public Mercat() {
-        jugadors = new ArrayList<Jugador>();
+        jugadors = new ArrayList<>();
     }
 
-    /***
+
     Jugador GetJugador (int i) { return jugadors.get(i); }
     Jugador GetPorter (int i) { return jugadors.get(i); }
     Jugador GetDefensor (int i) { return jugadors.get(i); }
     Jugador GetMigcampista (int i) { return jugadors.get(i); }
-    Jugador GetDavanter (int i) {return jugadors.get(i); }
-     ***/
+    Jugador GetDavanter (int i) { return jugadors.get(i); }
+
 
     public void LlegirFitxerJugadors(String fitxer) {
-        long Offset = 0;
         FileInputStream fis = null;
 
         try {
@@ -36,9 +35,9 @@ public class Mercat {
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             br.readLine();
             NJugadors = NPorters = NDefensors = NMigcampistes = NDavanters = 0;
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
-                String field[] = line.split(";");
+                String[] field = line.split(";");
                 Jugador jugador = new Jugador();
 
                 jugador.setId(Integer.parseInt(field[0]));
@@ -67,10 +66,11 @@ public class Mercat {
 
                 jugador.setPreu(Integer.parseInt(field[3]));
 
-                jugador.setValor(Integer.parseInt(field[4]));
+                jugador.setValor(Integer.parseInt(field[5]));
 
                 NJugadors++;
                 jugadors.add(jugador);
+                System.out.println(jugador.toString());
             }
             br.close();
 

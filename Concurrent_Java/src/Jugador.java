@@ -31,9 +31,7 @@ public class Jugador {
         this.preu = preu;
     }
 
-    public int getValor() {
-        return this.valor;
-    }
+    public int getValor() { return this.valor; }
 
     public void setValor(int valor) {
         this.valor = valor;
@@ -45,5 +43,13 @@ public class Jugador {
 
     public void setPosicio(TJugador posicio) {
         this.posicio = posicio;
+    }
+
+    public String toString() {
+        return "Nom: " + this.nom +
+                "\nId: " + this.id +
+                "\nPreu: " + this.preu +
+                "\nValor: " + this.valor +
+                "\nPosició: " + this.posicio;
     }
 }
