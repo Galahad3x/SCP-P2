@@ -46,7 +46,8 @@ public class Jugador {
     }
 
     public String toString() {
-        return "Nom: " + this.nom +
+        return "---------- JUGADOR ----------" +
+                "\nNom: " + this.nom +
                 "\nId: " + this.id +
                 "\nPreu: " + this.preu +
                 "\nValor: " + this.valor +
