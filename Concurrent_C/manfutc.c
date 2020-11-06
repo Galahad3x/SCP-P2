@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sys/select.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_PLAYERS_IN_MARKET 1000
 #define MAX_PLAYER_NAMES 50
@@ -49,6 +50,7 @@ int main(int argc, char* argvs[]){
 		struct Jugador j3;
 		mercat.jugadors[0] = j1;
 	}else{
-		printf("ERROR: 
+		printf("ERROR: Parametres incorrectes\n");
+		exit(-1);
 	}
 }
