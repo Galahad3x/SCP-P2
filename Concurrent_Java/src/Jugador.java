@@ -11,25 +11,19 @@ public class Jugador {
         return this.nom;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
+    public void setNom(String nom) { this.nom = nom; }
 
     public int getId() {
         return this.id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setId(int id) { this.id = id; }
 
     public int getPreu() {
         return this.preu;
     }
 
-    public void setPreu(int preu) {
-        this.preu = preu;
-    }
+    public void setPreu(int preu) { this.preu = preu; }
 
     public int getValor() { return this.valor; }
 
@@ -41,9 +35,7 @@ public class Jugador {
         return this.posicio;
     }
 
-    public void setPosicio(TJugador posicio) {
-        this.posicio = posicio;
-    }
+    public void setPosicio(TJugador posicio) { this.posicio = posicio;  }
 
     public String toString() {
         return "---------- JUGADOR ----------" +
