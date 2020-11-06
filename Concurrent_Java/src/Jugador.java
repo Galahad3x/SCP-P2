@@ -5,6 +5,7 @@ public class Jugador {
     public int preu;
     public int valor;
     public TJugador posicio;
+
     public Jugador (String nom, int preu, int valor, TJugador posicio) {
         this.nom = nom;
         this.preu = preu;
