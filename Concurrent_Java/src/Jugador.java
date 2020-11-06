@@ -1,4 +1,4 @@
-enum TJugador {Porter, Defensa, Migcampista, Delanter}
+enum TJugador {Porter, Defensa, Migcampista, Davanter}
 
 public class Jugador {
     public String nom;
@@ -6,14 +6,6 @@ public class Jugador {
     public int preu;
     public int valor;
     public TJugador posicio;
-
-    public Jugador (String nom,int id, int preu, int valor, TJugador posicio) {
-        this.nom = nom;
-        this.id = id;
-        this.preu = preu;
-        this.valor = valor;
-        this.posicio = posicio;
-    }
 
     public String getName() {
         return this.nom;
