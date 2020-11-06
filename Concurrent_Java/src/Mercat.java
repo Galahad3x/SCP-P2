@@ -46,28 +46,23 @@ public class Mercat {
                 jugador.setNom(field[1]);
 
                 switch (field[2]) {
-                    case "Portero":
+                    case "Portero" -> {
                         jugador.setPosicio(TJugador.Porter);
                         NPorters++;
-                        break;
-
-                    case "Defensa":
+                    }
+                    case "Defensa" -> {
                         jugador.setPosicio(TJugador.Defensa);
                         NDefensors++;
-                        break;
-
-                    case "Medio":
+                    }
+                    case "Medio" -> {
                         jugador.setPosicio(TJugador.Migcampista);
                         NMigcampistes++;
-                        break;
-
-                    case "Delantero":
+                    }
+                    case "Delantero" -> {
                         jugador.setPosicio(TJugador.Davanter);
                         NDavanters++;
-                        break;
-
-                    default:
-                        System.err.println("ERROR: Invalid player type.");
+                    }
+                    default -> System.err.println("ERROR: Invalid player type.");
                 }
 
                 jugador.setPreu(Integer.parseInt(field[3]));
