@@ -13,13 +13,11 @@ public class Mercat {
         jugadors = new ArrayList<>();
     }
 
-
     Jugador GetJugador (int i) { return jugadors.get(i); }
     Jugador GetPorter (int i) { return jugadors.get(i); }
     Jugador GetDefensor (int i) { return jugadors.get(i); }
     Jugador GetMigcampista (int i) { return jugadors.get(i); }
     Jugador GetDavanter (int i) { return jugadors.get(i); }
-
 
     public void LlegirFitxerJugadors(String fitxer) {
         FileInputStream fis = null;
@@ -34,16 +32,22 @@ public class Mercat {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             br.readLine();
+
             NJugadors = NPorters = NDefensors = NMigcampistes = NDavanters = 0;
+
             String line;
             while ((line = br.readLine()) != null) {
                 String[] field = line.split(";");
+                // Creating player
                 Jugador jugador = new Jugador();
 
+                // Setting player's id
                 jugador.setId(Integer.parseInt(field[0]));
 
+                // Setting player's name
                 jugador.setNom(field[1]);
 
+                // Setting player's position
                 switch (field[2]) {
                     case "Portero" -> {
                         jugador.setPosicio(TJugador.Porter);
@@ -63,9 +67,13 @@ public class Mercat {
                     }
                     default -> System.err.println("ERROR: Invalid player type.");
                 }
-
+                // Setting player's price
                 jugador.setPreu(Integer.parseInt(field[3]));
 
+                // Setting player's team
+                jugador.setEquip(field[4]);
+
+                // Setting player's value
                 jugador.setValor(Integer.parseInt(field[5]));
 
                 NJugadors++;

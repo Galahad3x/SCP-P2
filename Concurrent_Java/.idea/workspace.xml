@@ -53,7 +53,7 @@
     <configuration name="Manfutc" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Manfutc" />
       <module name="Concurrent_Java" />
-      <option name="PROGRAM_PARAMETERS" value="100000 mercat50j.csv 1" />
+      <option name="PROGRAM_PARAMETERS" value="100000 mercat15j.csv 1" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -88,57 +88,49 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604698374787">
+    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604698513317">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604698374787" />
-    <state x="260" y="278" key="FileChooserDialogImpl" timestamp="1604681229466">
+    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604698513317" />
+    <state x="260" y="278" key="FileChooserDialogImpl" timestamp="1604707158642">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="260" y="278" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604681229466" />
-    <state width="1877" height="279" key="GridCell.Tab.0.bottom" timestamp="1604698376129">
+    <state x="260" y="278" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604707158642" />
+    <state width="1877" height="279" key="GridCell.Tab.0.bottom" timestamp="1604707431013">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="279" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604698376129" />
-    <state width="1877" height="279" key="GridCell.Tab.0.center" timestamp="1604698376129">
+    <state width="1877" height="279" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604707431013" />
+    <state width="1877" height="279" key="GridCell.Tab.0.center" timestamp="1604707431013">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="279" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604698376129" />
-    <state width="1877" height="279" key="GridCell.Tab.0.left" timestamp="1604698376129">
+    <state width="1877" height="279" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604707431013" />
+    <state width="1877" height="279" key="GridCell.Tab.0.left" timestamp="1604707431013">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="279" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604698376129" />
-    <state width="1877" height="279" key="GridCell.Tab.0.right" timestamp="1604698376129">
+    <state width="1877" height="279" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604707431013" />
+    <state width="1877" height="279" key="GridCell.Tab.0.right" timestamp="1604707431013">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="279" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604698376129" />
-    <state width="914" height="349" key="GridCell.Tab.1.bottom" timestamp="1604698098412">
+    <state width="1877" height="279" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604707431013" />
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom" timestamp="1604698528449">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="349" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604698098412" />
-    <state width="914" height="349" key="GridCell.Tab.1.center" timestamp="1604698098412">
+    <state width="1877" height="352" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1604698528449" />
+    <state width="1877" height="352" key="GridCell.Tab.1.center" timestamp="1604698528448">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="349" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604698098412" />
-    <state width="914" height="349" key="GridCell.Tab.1.left" timestamp="1604698098412">
+    <state width="1877" height="352" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1604698528448" />
+    <state width="1877" height="352" key="GridCell.Tab.1.left" timestamp="1604698528448">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="349" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604698098412" />
-    <state width="914" height="349" key="GridCell.Tab.1.right" timestamp="1604698098412">
+    <state width="1877" height="352" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1604698528448" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right" timestamp="1604698528449">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="349" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604698098412" />
+    <state width="1877" height="352" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1604698528449" />
     <state x="0" y="165" key="SettingsEditor" timestamp="1604679646842">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="0" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1604679646842" />
-  </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="Application">
-        <watch expression="NJugadors" language="JAVA" />
-        <watch expression="NJugadors" language="JAVA" />
-      </configuration>
-    </watches-manager>
   </component>
 </project>
