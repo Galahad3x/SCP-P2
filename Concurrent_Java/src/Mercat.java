@@ -15,9 +15,9 @@ public class Mercat {
 
     Jugador GetJugador (int i) { return jugadors.get(i); }
     Jugador GetPorter (int i) { return jugadors.get(i); }
-    Jugador GetDefensor (int i) { return jugadors.get(i); }
-    Jugador GetMigcampista (int i) { return jugadors.get(i); }
-    Jugador GetDavanter (int i) { return jugadors.get(i); }
+    Jugador GetDefensor (int i) { return jugadors.get(i + NPorters); }
+    Jugador GetMigcampista (int i) { return jugadors.get(i + NPorters + NDefensors); }
+    Jugador GetDavanter (int i) { return jugadors.get(i + NPorters + NDefensors + NMigcampistes); }
 
     public void LlegirFitxerJugadors(String fitxer) {
         FileInputStream fis = null;
@@ -38,6 +38,7 @@ public class Mercat {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] field = line.split(";");
+
                 // Creating player
                 Jugador jugador = new Jugador();
 
@@ -86,6 +87,7 @@ public class Mercat {
             System.err.println("ERROR: Error doing I/O.");
         }
     }
+
     public void calcularEquipOptim(int pressupost) {
     }
 }
