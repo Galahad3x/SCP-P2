@@ -86,5 +86,6 @@ public class Mercat {
             System.err.println("ERROR: Error doing I/O.");
         }
     }
-
+    public void calcularEquipOptim(int pressupost) {
+    }
 }

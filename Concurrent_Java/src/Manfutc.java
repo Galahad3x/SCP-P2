@@ -16,5 +16,7 @@ public class Manfutc {
         } catch (Exception e) {
             System.out.println("ERROR: Error reading the file.");
         }
+        // Calculate best team
+        mercat.calcularEquipOptim(pressupost);
     }
 }
