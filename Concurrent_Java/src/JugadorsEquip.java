@@ -90,5 +90,7 @@ public class JugadorsEquip {
         for (Jugador davanter : davanters) {
             System.out.println(davanter.toString());
         }
+        System.out.println("Cost: " + getCost());
+        System.out.println("Puntuació: " + getValue());
     }
 }
