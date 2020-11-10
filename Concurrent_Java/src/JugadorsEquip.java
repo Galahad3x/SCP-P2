@@ -72,6 +72,24 @@ public class JugadorsEquip {
         return value;
     }
 
-    // 
+    // toString() function
+    public void printTeam() {
+        System.out.println("Porters: ");
+        for (Jugador porter : porters) {
+            System.out.println(porter.toString());
+        }
+        System.out.println("Defenses: ");
+        for (Jugador defensa : defenses) {
+            System.out.println(defensa.toString());
+        }
+        System.out.println("Migcampistes: ");
+        for (Jugador migcampista : migcampistes) {
+            System.out.println(migcampista.toString());
+        }
+        System.out.println("Davanters: ");
+        for (Jugador davanter : davanters) {
+            System.out.println(davanter.toString());
+        }
+    }
 
 }
