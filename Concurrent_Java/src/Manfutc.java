@@ -7,7 +7,7 @@ public class Manfutc {
 
         int pressupost = Integer.parseInt(argvs[0]);
         Mercat mercat = new Mercat();
-        int n_treads = Integer.parseInt(argvs[2]);
+        int n_threads = Integer.parseInt(argvs[2]);
 
         //Read file (mercatXj.csv)
         try {
@@ -19,5 +19,7 @@ public class Manfutc {
 
         // Calculate best team
         mercat.calcularEquipOptim(pressupost);
+        System.out.println("---------- MILLOR EQUIP ----------");
+
     }
 }

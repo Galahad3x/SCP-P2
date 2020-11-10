@@ -89,5 +89,6 @@ public class Mercat {
     }
 
     public void calcularEquipOptim(int pressupost) {
+
     }
 }
