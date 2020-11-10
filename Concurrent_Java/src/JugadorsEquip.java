@@ -72,7 +72,7 @@ public class JugadorsEquip {
         return value;
     }
 
-    // toString() function
+    // Prints the players of the team
     public void printTeam() {
         System.out.println("Porters: ");
         for (Jugador porter : porters) {
@@ -91,5 +91,4 @@ public class JugadorsEquip {
             System.out.println(davanter.toString());
         }
     }
-
 }
