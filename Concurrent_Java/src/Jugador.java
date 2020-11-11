@@ -8,40 +8,28 @@ public class Jugador {
     public String equip;
     public int valor;
 
-    // Get & Set Player's id
-    public int getId() { return this.id; }
+    // Set Player's id
     public void setId(int id) { this.id = id; }
 
-    // Get & Set Player's name
-    public String getNom() {
-        return this.nom;
-    }
+    // Set Player's name
     public void setNom(String nom) { this.nom = nom; }
 
-    // Get & Set Player's position
-    public TJugador getPosicio() {
-        return this.posicio;
-    }
+    // Set Player's position
     public void setPosicio(TJugador posicio) { this.posicio = posicio; }
 
-    // Get & Set Player's price
-    public int getPreu() {
-        return this.preu;
-    }
+    // Set Player's price
     public void setPreu(int preu) { this.preu = preu; }
 
-    // Get & Set Player's team
-    public String getEquip() { return this.equip; }
+    // Set Player's team
     public void setEquip(String equip) { this.equip = equip; }
 
-    // Get & Set Player's value
-    public int getValor() { return this.valor; }
+    // Set Player's value
     public void setValor(int valor) {
         this.valor = valor;
     }
 
-    // toString() function
-    public String toString() {
+    // Prints the players of the team
+    public String printPlayer() {
         return "---------- JUGADOR ----------" +
                 "\nId: " + this.id +
                 "\nNom: " + this.nom +
