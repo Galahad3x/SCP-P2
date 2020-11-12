@@ -57,40 +57,51 @@ struct Equip {
 
 struct Mercat mercat;
 int numero_threads;
+int debug = 0;
 volatile int id_equips;
 static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
 
 int jugador_apte(struct Equip equip, struct Jugador jugador){
 	if(jugador.preu > equip.pressupost){
-		printf("NO APTE: %s és massa car\n",jugador.nom);
+		if(debug == 1){
+			printf("NO APTE: %s és massa car\n",jugador.nom);
+		}
 		return -1;
 	}
 	if(jugador.posicio == PORTER){
 		if(equip.jugadors.n_porters < MAX_PORTERS){
 			return 0;
 		}else{
-			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			if(debug == 1){
+				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			}
 			return -1;
 		}
 	}else if(jugador.posicio == DEFENSA){
 		if(equip.jugadors.n_defenses < MAX_DEFENSES){
 			return 0;
 		}else{
-			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			if(debug == 1){
+				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			}
 			return -1;
 		}
 	}else if(jugador.posicio == CENTRE){
 		if(equip.jugadors.n_centres < MAX_CENTRES){
 			return 0;
 		}else{
-			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			if(debug == 1){
+				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			}
 			return -1;
 		}
 	}else{
 		if(equip.jugadors.n_davanters < MAX_DAVANTERS){
 			return 0;
 		}else{
-			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			if(debug == 1){
+				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+			}
 			return -1;
 		}
 	}
@@ -204,7 +215,9 @@ void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti)
 int trobar_millor_equip(struct Equip *equip, int index){
 	if(index == 0){
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
-			printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+			if(debug == 1){
+				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+			}
 			afegir_jugador(equip, mercat.jugadors[index]);
 		}
 		
@@ -215,14 +228,12 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		
 		pthread_mutex_unlock(&mutex_ids);
 		return equip -> valor;
-		
 	}else{
 		
 		int val_no_agafar, val_agafar = 0;
 		struct JugadorsEquip no_agafar,agafar;
 		struct Equip no_agafar_equip,agafar_equip;
 		
-		printf("Index: %i\n", index);
 		
 		deepcopy_jugadors(equip -> jugadors,&no_agafar);
 		
@@ -234,7 +245,9 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		
 		
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
-			printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+			if(debug == 1){
+				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+			}
 			
 			deepcopy_jugadors(equip -> jugadors,&agafar);
 			
@@ -249,7 +262,9 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			
 		}
 		
-		printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
+		if(debug == 1){
+			printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
+		}
 		
 		if(val_agafar == 0 || val_no_agafar > val_agafar){
 			equip -> valor = no_agafar_equip.valor;
@@ -308,15 +323,19 @@ int main(int argc, char* argvs[]){
 	if(argc >= 4){
 		mercat.pressupost = atoi(argvs[1]);
 		numero_threads = atoi(argvs[3]);
+		if(argc >= 5){
+			if(strcmp("-d",argvs[4]) == 0){
+				debug = 1;
+			}
+		}
 		
-		printf("Nom mercat: %s\n",argvs[2]);
+		if(debug == 1){
+			printf("Nom mercat: %s\n",argvs[2]);
+		}
 		llegir_mercat(argvs[2]);
 		
-		printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
-		
-		for(int i = 0; i < mercat.num_jugadors;i++){
-			printar_jugador(mercat.jugadors[i]);
-			printf("\n");
+		if(debug == 1){
+			printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
 		}
 		
 		struct Equip millor_equip;
