@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 #define MAX_PLAYERS_IN_MARKET 100
 #define MAX_PLAYER_NAMES 50
@@ -56,33 +57,40 @@ struct Equip {
 
 struct Mercat mercat;
 int numero_threads;
+volatile int id_equips;
+static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
 
 int jugador_apte(struct Equip equip, struct Jugador jugador){
 	if(jugador.preu > equip.pressupost){
+		printf("NO APTE: %s és massa car\n",jugador.nom);
 		return -1;
 	}
 	if(jugador.posicio == PORTER){
 		if(equip.jugadors.n_porters < MAX_PORTERS){
 			return 0;
 		}else{
+			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
 			return -1;
 		}
 	}else if(jugador.posicio == DEFENSA){
 		if(equip.jugadors.n_defenses < MAX_DEFENSES){
 			return 0;
 		}else{
+			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
 			return -1;
 		}
 	}else if(jugador.posicio == CENTRE){
 		if(equip.jugadors.n_centres < MAX_CENTRES){
 			return 0;
 		}else{
+			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
 			return -1;
 		}
 	}else{
 		if(equip.jugadors.n_davanters < MAX_DAVANTERS){
 			return 0;
 		}else{
+			printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
 			return -1;
 		}
 	}
@@ -96,13 +104,13 @@ void afegir_jugador(struct Equip *equip, struct Jugador jugador){
 		equip -> jugadors.porters[equip -> jugadors.n_porters] = jugador;
 		equip -> jugadors.n_porters++;
 	}else if(jugador.posicio == DEFENSA){
-		equip -> jugadors.porters[equip -> jugadors.n_defenses] = jugador;
+		equip -> jugadors.defenses[equip -> jugadors.n_defenses] = jugador;
 		equip -> jugadors.n_defenses++;
 	}else if(jugador.posicio == CENTRE){
-		equip -> jugadors.porters[equip -> jugadors.n_centres] = jugador;
+		equip -> jugadors.centres[equip -> jugadors.n_centres] = jugador;
 		equip -> jugadors.n_centres++;
 	}else if(jugador.posicio == DAVANTER){
-		equip -> jugadors.porters[equip -> jugadors.n_davanters] = jugador;
+		equip -> jugadors.davanters[equip -> jugadors.n_davanters] = jugador;
 		equip -> jugadors.n_davanters++;
 	}
 }
@@ -174,15 +182,87 @@ void llegir_mercat(char *pathJugadors) {
 	close(fdin);
 }
 
-void trobar_millor_equip(struct Equip *equip, int index, int pressupost){
+void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti){
+	for(int i = 0; i < origen.n_porters; i++){
+		desti -> porters[i] = origen.porters[i];
+	}
+	desti -> n_porters = origen.n_porters;
+	for(int i = 0; i < origen.n_defenses; i++){
+		desti -> defenses[i] = origen.defenses[i];
+	}
+	desti -> n_defenses = origen.n_defenses;
+	for(int i = 0; i < origen.n_centres; i++){
+		desti -> centres[i] = origen.centres[i];
+	}
+	desti -> n_centres = origen.n_centres;
+	for(int i = 0; i < origen.n_davanters; i++){
+		desti -> davanters[i] = origen.davanters[i];
+	}
+	desti -> n_davanters = origen.n_davanters;
+}
+
+int trobar_millor_equip(struct Equip *equip, int index){
 	if(index == 0){
-		printf("%i\n",jugador_apte(*equip, mercat.jugadors[index]));
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			afegir_jugador(equip, mercat.jugadors[index]);
 		}
+		
+		pthread_mutex_lock(&mutex_ids);
+		
+		equip -> id = id_equips;
+		id_equips++;
+		
+		pthread_mutex_unlock(&mutex_ids);
+		return equip -> valor;
+		
 	}else{
 		
+		int val_no_agafar, val_agafar = 0;
+		struct JugadorsEquip no_agafar,agafar;
+		struct Equip no_agafar_equip,agafar_equip;
+		
+		printf("Index: %i\n", index);
+		
+		deepcopy_jugadors(equip -> jugadors,&no_agafar);
+		
+		no_agafar_equip.valor = equip -> valor;
+		no_agafar_equip.cost = equip -> cost;
+		no_agafar_equip.pressupost = equip -> pressupost;
+		no_agafar_equip.jugadors = no_agafar;
+		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1);
+		
+		
+		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
+			printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+			
+			deepcopy_jugadors(equip -> jugadors,&agafar);
+			
+			agafar_equip.valor = equip -> valor;
+			agafar_equip.cost = equip -> cost;
+			agafar_equip.pressupost = equip -> pressupost;
+			agafar_equip.jugadors = agafar;
+			
+			afegir_jugador(&agafar_equip, mercat.jugadors[index]);
+			
+			val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
+			
+		}
+		
+		printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
+		
+		if(val_agafar == 0 || val_no_agafar > val_agafar){
+			equip -> valor = no_agafar_equip.valor;
+			equip -> cost = no_agafar_equip.cost;
+			equip -> pressupost = no_agafar_equip.pressupost;
+			equip -> jugadors = no_agafar_equip.jugadors;
+		}else{
+			equip -> valor = agafar_equip.valor;
+			equip -> cost = agafar_equip.cost;
+			equip -> pressupost = agafar_equip.pressupost;
+			equip -> jugadors = agafar_equip.jugadors;
+		}
+		return equip -> valor;
 	}
 }
 
@@ -205,18 +285,22 @@ void printar_equip(struct Equip equip){
 	printf("\nPORTERS:\n");
 	for(int i = 0; i < equip.jugadors.n_porters;i++){
 		printar_jugador(equip.jugadors.porters[i]);
+		printf("\n");
 	}
 	printf("\nDEFENSES:\n");
 	for(int i = 0; i < equip.jugadors.n_defenses;i++){
 		printar_jugador(equip.jugadors.defenses[i]);
+		printf("\n");
 	}
 	printf("\nCENTRES:\n");
 	for(int i = 0; i < equip.jugadors.n_centres;i++){
 		printar_jugador(equip.jugadors.centres[i]);
+		printf("\n");
 	}
 	printf("\nDAVANTERS:\n");
 	for(int i = 0; i < equip.jugadors.n_davanters;i++){
 		printar_jugador(equip.jugadors.davanters[i]);
+		printf("\n");
 	}
 }
 
@@ -230,6 +314,11 @@ int main(int argc, char* argvs[]){
 		
 		printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
 		
+		for(int i = 0; i < mercat.num_jugadors;i++){
+			printar_jugador(mercat.jugadors[i]);
+			printf("\n");
+		}
+		
 		struct Equip millor_equip;
 		millor_equip.id = 0;
 		millor_equip.valor = 0;
@@ -240,7 +329,8 @@ int main(int argc, char* argvs[]){
 		millor_equip.jugadors.n_centres = 0;
 		millor_equip.jugadors.n_davanters = 0;
 		
-		trobar_millor_equip(&millor_equip, 0, mercat.pressupost);
+		printf("\n");
+		int millor = trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
 		
 		printar_equip(millor_equip);
 	}else{
