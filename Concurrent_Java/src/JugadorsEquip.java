@@ -1,3 +1,5 @@
+import java.util.concurrent.LinkedBlockingDeque;
+
 public class JugadorsEquip {
     int MAX_PORTERS = 1;
     int MAX_DEFENSES = 3;
@@ -44,15 +46,17 @@ public class JugadorsEquip {
         }
     }
 
-    // Gets all the goalkeepers
-    public Jugador[] getPorters() { return this.porters; }
-
-    // Gets all the defenders
-    public Jugador[] getDefenses() { return this.defenses; }
-
-    // Gets all the midfielders
-    public Jugador[] getMigcampistes() { return this.migcampistes; }
-
-    // Gets all the attackers
-    public Jugador[] getDavanters() { return this.davanters; }
+    // Gets a player
+    public Jugador getPlayer(int index) {
+        if (index < MAX_PORTERS) {
+            return this.porters[index];
+        } else if (index < (MAX_DEFENSES + MAX_PORTERS)) {
+            return this.defenses[index];
+        } else if (index < (MAX_MIGCAMPISTES + MAX_DEFENSES + MAX_PORTERS)) {
+            return this.migcampistes[index];
+        } else if (index < (MAX_DAVANTERS + MAX_MIGCAMPISTES + MAX_DEFENSES + MAX_PORTERS)) {
+            return this.davanters[index];
+        }
+        return null;
+    }
 }

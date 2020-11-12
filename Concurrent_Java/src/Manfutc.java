@@ -1,15 +1,22 @@
 import java.io.*;
 
 public class Manfutc {
+
+    public static int pressupost;
+    public static int n_threads;
+    public static Mercat mercat;
+    public static Equip equip;
+    static int id_equips = 0;
+
     public static void main(String[] argvs) {
         if (argvs.length != 3) {
             throw new IllegalArgumentException("Error while introduce the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
         }
 
-        int pressupost = Integer.parseInt(argvs[0]);
-        int n_threads = Integer.parseInt(argvs[2]);
-        Mercat mercat = new Mercat();
-        Equip equip = new Equip(0, 0, 0, pressupost, null);
+        pressupost = Integer.parseInt(argvs[0]);
+        n_threads = Integer.parseInt(argvs[2]);
+        mercat = new Mercat();
+        equip = new Equip(0, 0, 0, pressupost, null);
 
         //Reads the file (mercatXj.csv)
         try {
@@ -21,7 +28,7 @@ public class Manfutc {
 
         // Calculates the best team
         System.out.println("---------- Calculant l'equip òptim ----------");
-        equip = calcularEquipOptim(pressupost, n_threads, mercat, equip, (mercat.NJugadors - 1));
+        equip = calcularEquipOptim(mercat, equip, (mercat.NJugadors - 1));
         System.out.println("---------- MILLOR EQUIP OBTINGUT ----------");
         equip.printTeam();
     }
@@ -98,13 +105,29 @@ public class Manfutc {
     }
 
     // Calculates the best team
-    public static Equip calcularEquipOptim(int pressupost, int n_threads, Mercat mercat, Equip equip, int index) {
+    public static Equip calcularEquipOptim(Mercat mercat, Equip equip, int index) {
         if (index == 0) {
             if (equip.fitPlayer(mercat.getJugador(index))) {
                 equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
+                equip.id = id_equips;
+                id_equips++;
             }
         } else {
-            
+            int val_no_agafar, val_agafar = 0;
+            JugadorsEquip no_agafar = new JugadorsEquip();
+            JugadorsEquip agafar = new JugadorsEquip();
+            Equip no_agafar_equip = new Equip(0, 0, 0, 0, null);
+            Equip agafar_equip = new Equip(0, 0, 0, 0, null);
+
+
+            for (int i = 0; i < (equip.jugadorsEquip.MAX_PORTERS + equip.jugadorsEquip.MAX_DEFENSES + equip.jugadorsEquip.MAX_MIGCAMPISTES + equip.jugadorsEquip.MAX_DAVANTERS); i++) {
+                no_agafar.addPlayer(equip.jugadorsEquip.getPlayer(i));
+            }
+            no_agafar_equip.valor = equip.valor;
+            no_agafar_equip.cost = equip.cost;
+            no_agafar_equip.pressupost = equip.pressupost;
+            no_agafar_equip.jugadorsEquip = no_agafar;
+            val_no_agafar = calcularEquipOptim(mercat, no_agafar_equip, index - 1).valor;
         }
         return equip;
     }
