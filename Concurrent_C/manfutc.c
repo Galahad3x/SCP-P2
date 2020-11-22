@@ -311,6 +311,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				}
 			}
 			
+			active_threads[child_thread] = 1;
 			pthread_mutex_unlock(&mutex_actives);
 			
 			//Si hi ha un thread lliure
@@ -322,14 +323,12 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				args.equip = *equip;
 				args.index = index;
 				
-				printf("Abans de create %i \n", pthread_self());
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
 					if(debug == 1){
 						printf("ERROR: Error al crear un thread\n");
 						exit(-1);
 					}
 				}
-				active_threads[child_thread] = 1;
 			}else{ //No hi ha espai als threads, ho fa el mateix thread
 				deepcopy_jugadors(equip -> jugadors,&agafar);
 				
@@ -360,7 +359,6 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			//El join te l'equip agafar
 			struct Equip *agafar_thread;
 			int ret;
-			printf("Abans de join\n");
 			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
 				printf("ERROR: Error al fer un join %i\n", ret);
 			}
