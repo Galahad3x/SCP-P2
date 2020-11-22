@@ -362,9 +362,9 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
 				printf("ERROR: Error al fer un join %i\n", ret);
 			}
-			pthread_mutex_lock(&mutex_actives);
+			
 			active_threads[child_thread] = 0;
-			pthread_mutex_unlock(&mutex_actives);
+			
 			agafar_equip = *agafar_thread;
 		}
 		//Els 2 threads han d'haver acabat
