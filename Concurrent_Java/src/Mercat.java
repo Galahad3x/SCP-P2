@@ -1,9 +1,5 @@
 public class Mercat {
     int NJugadors;
-    int NPorters;
-    int NDefensors;
-    int NMigcampistes;
-    int NDavanters;
     Jugador[] jugadors;
 
     public Mercat() {

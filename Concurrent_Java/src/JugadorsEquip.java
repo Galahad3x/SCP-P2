@@ -1,15 +1,20 @@
-import java.util.concurrent.LinkedBlockingDeque;
-
 public class JugadorsEquip {
     int MAX_PORTERS = 1;
     int MAX_DEFENSES = 3;
     int MAX_MIGCAMPISTES = 2;
     int MAX_DAVANTERS = 1;
+    int MAX_JUGADORS = MAX_PORTERS + MAX_DEFENSES + MAX_MIGCAMPISTES + MAX_DAVANTERS;
+
+    int numPorters = 0;
+    int numDefenses = 0;
+    int numMigcampistes = 0;
+    int numDavanters = 0;
 
     public Jugador[] porters = new Jugador[MAX_PORTERS];
     public Jugador[] defenses = new Jugador[MAX_DEFENSES];
     public Jugador[] migcampistes = new Jugador[MAX_MIGCAMPISTES];
     public Jugador[] davanters = new Jugador[MAX_DAVANTERS];
+    public Jugador[] jugadors = new Jugador[MAX_JUGADORS];
 
     public JugadorsEquip () {}
 
@@ -22,6 +27,7 @@ public class JugadorsEquip {
                         porters[i] = jugador;
                     }
                 }
+                numPorters++;
             }
             case Defensa ->  {
                 for (int i = 0; i < defenses.length; i++) {
@@ -29,12 +35,15 @@ public class JugadorsEquip {
                         defenses[i] = jugador;
                     }
                 }
-            }case Migcampista ->  {
+                numDefenses++;
+            }
+            case Migcampista ->  {
                 for (int i = 0; i < migcampistes.length; i++) {
                     if (migcampistes[i] == null) {
                         migcampistes[i] = jugador;
                     }
                 }
+                numMigcampistes++;
             }
             case Davanter ->  {
                 for (int i = 0; i < davanters.length; i++) {
@@ -42,21 +51,21 @@ public class JugadorsEquip {
                         davanters[i] = jugador;
                     }
                 }
+                numDavanters++;
             }
         }
     }
 
+    public void getJugadors() {
+        if (MAX_PORTERS >= 0) System.arraycopy(porters, 0, jugadors, 0, MAX_PORTERS);
+        if (MAX_DEFENSES >= 0) System.arraycopy(defenses, 0, jugadors, 0, MAX_DEFENSES);
+        if (MAX_MIGCAMPISTES >= 0) System.arraycopy(migcampistes, 0, jugadors, 0, MAX_MIGCAMPISTES);
+        if (MAX_DAVANTERS >= 0) System.arraycopy(davanters, 0, jugadors, 0, MAX_DAVANTERS);
+    }
+
     // Gets a player
     public Jugador getPlayer(int index) {
-        if (index < MAX_PORTERS) {
-            return this.porters[index];
-        } else if (index < (MAX_DEFENSES + MAX_PORTERS)) {
-            return this.defenses[index];
-        } else if (index < (MAX_MIGCAMPISTES + MAX_DEFENSES + MAX_PORTERS)) {
-            return this.migcampistes[index];
-        } else if (index < (MAX_DAVANTERS + MAX_MIGCAMPISTES + MAX_DEFENSES + MAX_PORTERS)) {
-            return this.davanters[index];
-        }
-        return null;
+        getJugadors();
+        return jugadors[index];
     }
 }
