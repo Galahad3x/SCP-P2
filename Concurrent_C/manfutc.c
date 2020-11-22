@@ -6,6 +6,8 @@
 #include <fcntl.h>
 #include <pthread.h>
 
+#define ASSUMED_MAX_THREADS 10
+
 #define MAX_PLAYERS_IN_MARKET 100
 #define MAX_PLAYER_NAMES 50
 #define MAX_MARKET_LINE 128
@@ -55,11 +57,71 @@ struct Equip {
 	struct JugadorsEquip jugadors;
 };
 
+struct ThreadArgs {
+	struct Equip equip;
+	int index;
+};
+
 struct Mercat mercat;
 int numero_threads;
 int debug = 0;
 volatile int id_equips;
+pthread_t threads[ASSUMED_MAX_THREADS];
+volatile int active_threads[ASSUMED_MAX_THREADS];
 static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
+
+int jugador_apte(struct Equip equip, struct Jugador jugador);
+void afegir_jugador(struct Equip *equip, struct Jugador jugador);
+void llegir_mercat(char *pathJugadors);
+void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti);
+int trobar_millor_equip(struct Equip *equip, int index);
+void *trobar_millor_equip_conc(void *argvs);
+void printar_jugador(struct Jugador jugador);
+void printar_equip(struct Equip equip);
+
+int main(int argc, char* argvs[]){
+	if(argc >= 4){
+		mercat.pressupost = atoi(argvs[1]);
+		numero_threads = atoi(argvs[3]);
+		
+		for(int i = 0; i < numero_threads; i++){
+			active_threads[i] = 0;
+		}
+		
+		if(argc >= 5){
+			if(strcmp("-d",argvs[4]) == 0){
+				debug = 1;
+			}
+		}
+		
+		if(debug == 1){
+			printf("Nom mercat: %s\n",argvs[2]);
+		}
+		llegir_mercat(argvs[2]);
+		
+		if(debug == 1){
+			printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
+		}
+		
+		struct Equip millor_equip;
+		millor_equip.id = 0;
+		millor_equip.valor = 0;
+		millor_equip.cost = 0;
+		millor_equip.pressupost = mercat.pressupost;
+		millor_equip.jugadors.n_porters = 0;
+		millor_equip.jugadors.n_defenses = 0;
+		millor_equip.jugadors.n_centres = 0;
+		millor_equip.jugadors.n_davanters = 0;
+		
+		printf("\n");
+		int millor = trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
+		
+		printar_equip(millor_equip);
+	}else{
+		printf("ERROR: Parametres incorrectes\n");
+		exit(-1);
+	}
+}
 
 int jugador_apte(struct Equip equip, struct Jugador jugador){
 	if(jugador.preu > equip.pressupost){
@@ -126,7 +188,7 @@ void afegir_jugador(struct Equip *equip, struct Jugador jugador){
 	}
 }
 
-void llegir_mercat(char *pathJugadors) {
+void llegir_mercat(char *pathJugadors){
 	char buffer[256];
 	int fdin;
 	int nofi;
@@ -230,38 +292,75 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		return equip -> valor;
 	}else{
 		
-		int val_no_agafar, val_agafar = 0;
+		int val_no_agafar, val_agafar = 0, child_thread = -1;
 		struct JugadorsEquip no_agafar,agafar;
 		struct Equip no_agafar_equip,agafar_equip;
-		
-		
-		deepcopy_jugadors(equip -> jugadors,&no_agafar);
-		
-		no_agafar_equip.valor = equip -> valor;
-		no_agafar_equip.cost = equip -> cost;
-		no_agafar_equip.pressupost = equip -> pressupost;
-		no_agafar_equip.jugadors = no_agafar;
-		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1);
-		
-		
+		printf("Index %i\n",index);
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
 				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			}
 			
-			deepcopy_jugadors(equip -> jugadors,&agafar);
+			for(int i = 0; i < numero_threads; i++){
+				if(active_threads[i] == 0){
+					child_thread = i;
+					break;
+				}
+			}
 			
-			agafar_equip.valor = equip -> valor;
-			agafar_equip.cost = equip -> cost;
-			agafar_equip.pressupost = equip -> pressupost;
-			agafar_equip.jugadors = agafar;
-			
-			afegir_jugador(&agafar_equip, mercat.jugadors[index]);
-			
-			val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
-			
+			//Si hi ha un thread lliure
+			if(child_thread != -1){
+				//Fer tot lo del thread
+				//Iniciar thread que faci tot aixo i retorni a val_agafar
+				//Parametres del thread equip i index
+				struct ThreadArgs args;
+				args.equip = *equip;
+				args.index = index;
+				
+				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
+					if(debug == 1){
+						printf("ERROR: Error al crear un thread\n");
+						exit(-1);
+					}
+				}
+				active_threads[child_thread] = 1;
+			}else{ //No hi ha espai als threads, ho fa el mateix thread
+				deepcopy_jugadors(equip -> jugadors,&agafar);
+				
+				agafar_equip.valor = equip -> valor;
+				agafar_equip.id = equip -> id;
+				agafar_equip.cost = equip -> cost;
+				agafar_equip.pressupost = equip -> pressupost;
+				agafar_equip.jugadors = agafar;
+				
+				afegir_jugador(&agafar_equip, mercat.jugadors[index]);
+				
+				val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
+			}
 		}
 		
+		deepcopy_jugadors(equip -> jugadors,&no_agafar);
+		
+		no_agafar_equip.valor = equip -> valor;
+		no_agafar_equip.cost = equip -> cost;
+		no_agafar_equip.id = equip -> id;
+		no_agafar_equip.pressupost = equip -> pressupost;
+		no_agafar_equip.jugadors = no_agafar;
+		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1);
+		
+		
+		if(child_thread != -1){
+			//principal fa join de l'altre
+			//El join te l'equip agafar
+			struct Equip *agafar_thread;
+			if(pthread_join(threads[child_thread], (void **) &agafar_thread) != 0){
+				printf("ERROR: Error al fer un join\n");
+				exit(-1);
+			}
+			active_threads[child_thread] = 0;
+			agafar_equip = *agafar_thread;
+		}
+		//Els 2 threads han d'haver acabat
 		if(debug == 1){
 			printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
 		}
@@ -279,6 +378,36 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		}
 		return equip -> valor;
 	}
+}
+
+void *trobar_millor_equip_conc(void *argvs){
+	//Llegir parametres: equip i index
+	struct ThreadArgs args = *((struct ThreadArgs *) argvs);
+	
+	struct Equip equip = args.equip;
+	int index = args.index;
+	
+	struct JugadorsEquip agafar;
+	struct Equip agafar_equip;
+	int val_agafar;
+	
+	deepcopy_jugadors(equip.jugadors,&agafar);
+	
+	agafar_equip.valor = equip.valor;
+	agafar_equip.id = equip.id;
+	agafar_equip.cost = equip.cost;
+	agafar_equip.pressupost = equip.pressupost;
+	agafar_equip.jugadors = agafar;
+	
+	afegir_jugador(&agafar_equip, mercat.jugadors[index]);
+	
+	val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
+	
+	struct Equip *max_equip;
+	max_equip = (struct Equip *) malloc(sizeof(struct Equip));
+	*max_equip = agafar_equip;
+	return max_equip;
+	//Retornar equip maxim amb el jugador(valor incluit va dins)
 }
 
 void printar_jugador(struct Jugador jugador){
@@ -316,44 +445,5 @@ void printar_equip(struct Equip equip){
 	for(int i = 0; i < equip.jugadors.n_davanters;i++){
 		printar_jugador(equip.jugadors.davanters[i]);
 		printf("\n");
-	}
-}
-
-int main(int argc, char* argvs[]){
-	if(argc >= 4){
-		mercat.pressupost = atoi(argvs[1]);
-		numero_threads = atoi(argvs[3]);
-		if(argc >= 5){
-			if(strcmp("-d",argvs[4]) == 0){
-				debug = 1;
-			}
-		}
-		
-		if(debug == 1){
-			printf("Nom mercat: %s\n",argvs[2]);
-		}
-		llegir_mercat(argvs[2]);
-		
-		if(debug == 1){
-			printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
-		}
-		
-		struct Equip millor_equip;
-		millor_equip.id = 0;
-		millor_equip.valor = 0;
-		millor_equip.cost = 0;
-		millor_equip.pressupost = mercat.pressupost;
-		millor_equip.jugadors.n_porters = 0;
-		millor_equip.jugadors.n_defenses = 0;
-		millor_equip.jugadors.n_centres = 0;
-		millor_equip.jugadors.n_davanters = 0;
-		
-		printf("\n");
-		int millor = trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
-		
-		printar_equip(millor_equip);
-	}else{
-		printf("ERROR: Parametres incorrectes\n");
-		exit(-1);
 	}
 }
