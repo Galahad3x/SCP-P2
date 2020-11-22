@@ -69,6 +69,7 @@ volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
 static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mutex_actives = PTHREAD_MUTEX_INITIALIZER;
 
 int jugador_apte(struct Equip equip, struct Jugador jugador);
 void afegir_jugador(struct Equip *equip, struct Jugador jugador);
@@ -114,7 +115,7 @@ int main(int argc, char* argvs[]){
 		millor_equip.jugadors.n_davanters = 0;
 		
 		printf("\n");
-		int millor = trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
+		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
 		
 		printar_equip(millor_equip);
 	}else{
@@ -295,11 +296,13 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		int val_no_agafar, val_agafar = 0, child_thread = -1;
 		struct JugadorsEquip no_agafar,agafar;
 		struct Equip no_agafar_equip,agafar_equip;
-		printf("Index %i\n",index);
+		//printf("Index %i\n",index);
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
 				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			}
+			
+			pthread_mutex_lock(&mutex_actives);
 			
 			for(int i = 0; i < numero_threads; i++){
 				if(active_threads[i] == 0){
@@ -307,6 +310,8 @@ int trobar_millor_equip(struct Equip *equip, int index){
 					break;
 				}
 			}
+			
+			pthread_mutex_unlock(&mutex_actives);
 			
 			//Si hi ha un thread lliure
 			if(child_thread != -1){
@@ -317,6 +322,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				args.equip = *equip;
 				args.index = index;
 				
+				printf("Abans de create %i \n", pthread_self());
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
 					if(debug == 1){
 						printf("ERROR: Error al crear un thread\n");
@@ -353,11 +359,14 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			//principal fa join de l'altre
 			//El join te l'equip agafar
 			struct Equip *agafar_thread;
-			if(pthread_join(threads[child_thread], (void **) &agafar_thread) != 0){
-				printf("ERROR: Error al fer un join\n");
-				exit(-1);
+			int ret;
+			printf("Abans de join\n");
+			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
+				printf("ERROR: Error al fer un join %i\n", ret);
 			}
+			pthread_mutex_lock(&mutex_actives);
 			active_threads[child_thread] = 0;
+			pthread_mutex_unlock(&mutex_actives);
 			agafar_equip = *agafar_thread;
 		}
 		//Els 2 threads han d'haver acabat
@@ -389,7 +398,6 @@ void *trobar_millor_equip_conc(void *argvs){
 	
 	struct JugadorsEquip agafar;
 	struct Equip agafar_equip;
-	int val_agafar;
 	
 	deepcopy_jugadors(equip.jugadors,&agafar);
 	
@@ -401,7 +409,7 @@ void *trobar_millor_equip_conc(void *argvs){
 	
 	afegir_jugador(&agafar_equip, mercat.jugadors[index]);
 	
-	val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
+	trobar_millor_equip(&agafar_equip, index - 1);
 	
 	struct Equip *max_equip;
 	max_equip = (struct Equip *) malloc(sizeof(struct Equip));
