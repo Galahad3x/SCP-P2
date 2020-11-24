@@ -43,11 +43,11 @@ public class Equip {
         if (jugador != null) {
             for (int i = 0; i < jugadorsEquip.MAX_JUGADORS; i++) {
                 if (jugador == jugadorsEquip.getPlayer(i)) {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
     // Prints the players of the team
@@ -56,21 +56,21 @@ public class Equip {
         System.out.println("Valor de l'equip: " + valor);
         System.out.println("Cost de l'equip: " + cost);
         System.out.println("Jugadors de l'equip òpim: ");
-        System.out.println("   - Porters: ");
+        System.out.println("Porters: ");
         for (Jugador porter : jugadorsEquip.porters) {
-                System.out.println(porter.nom);
+                System.out.println("   - " + porter.nom);
         }
-        System.out.println("   - Defenses: ");
+        System.out.println("Defenses: ");
         for (Jugador defensa : jugadorsEquip.defenses) {
-                System.out.println(defensa.nom);
+                System.out.println("   - " + defensa.nom);
         }
-        System.out.println("   - Migcampistes: ");
+        System.out.println("Migcampistes: ");
         for (Jugador migcampista : jugadorsEquip.migcampistes) {
-                System.out.println(migcampista.nom);
+                System.out.println("   - " + migcampista.nom);
         }
-        System.out.println("   - Davanters: ");
+        System.out.println("Davanters: ");
         for (Jugador davanter : jugadorsEquip.davanters) {
-                System.out.println(davanter.nom);
+                System.out.println("   - " + davanter.nom);
         }
     }
 }

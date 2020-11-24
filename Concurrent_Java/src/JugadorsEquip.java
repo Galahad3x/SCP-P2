@@ -25,47 +25,47 @@ public class JugadorsEquip {
                 for (int i = 0; i < porters.length; i++) {
                     if (porters[i] == null) {
                         porters[i] = jugador;
+                        numPorters++;
                         break;
                     }
                 }
-                numPorters++;
             }
             case Defensa ->  {
                 for (int i = 0; i < defenses.length; i++) {
                     if (defenses[i] == null) {
                         defenses[i] = jugador;
+                        numDefenses++;
                         break;
                     }
                 }
-                numDefenses++;
             }
             case Migcampista ->  {
                 for (int i = 0; i < migcampistes.length; i++) {
                     if (migcampistes[i] == null) {
                         migcampistes[i] = jugador;
+                        numMigcampistes++;
                         break;
                     }
                 }
-                numMigcampistes++;
             }
             case Davanter ->  {
                 for (int i = 0; i < davanters.length; i++) {
                     if (davanters[i] == null) {
                         davanters[i] = jugador;
+                        numDavanters++;
                         break;
                     }
                 }
-                numDavanters++;
             }
         }
     }
 
     // Copies all the diferent player's array into an array together
     public void getJugadors() {
-        if (MAX_PORTERS >= 0) System.arraycopy(porters, 0, jugadors, 0, MAX_PORTERS);
-        if (MAX_DEFENSES >= 0) System.arraycopy(defenses, 0, jugadors, 0, MAX_DEFENSES);
-        if (MAX_MIGCAMPISTES >= 0) System.arraycopy(migcampistes, 0, jugadors, 0, MAX_MIGCAMPISTES);
-        if (MAX_DAVANTERS >= 0) System.arraycopy(davanters, 0, jugadors, 0, MAX_DAVANTERS);
+        System.arraycopy(porters, 0, jugadors, 0, porters.length);
+        System.arraycopy(defenses, 0, jugadors, porters.length, defenses.length);
+        System.arraycopy(migcampistes, 0, jugadors, defenses.length, migcampistes.length);
+        System.arraycopy(davanters, 0, jugadors, migcampistes.length, davanters.length);
     }
 
     // Gets a player

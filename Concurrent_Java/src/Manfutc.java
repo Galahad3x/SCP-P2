@@ -2,37 +2,36 @@ import java.io.*;
 
 public class Manfutc {
 
-    public static int pressupost;
+    public static int id_equips = 0;
     public static int n_threads;
-    public static Mercat mercat = new Mercat();
-    public static JugadorsEquip jugadorsEquip = new JugadorsEquip();
-    public static Equip equip;
-    public static Equip equipOptim = new Equip(0, 0, 0, 0, jugadorsEquip);
 
-    static int id_equips = 0;
-    public static int val_no_agafar, val_agafar = 0;
     public static JugadorsEquip no_agafar = new JugadorsEquip();
-    public static Equip no_agafar_equip = new Equip(0, 0, 0, 0, jugadorsEquip);
+    public static Equip no_agafar_equip = new Equip(0, 0, 0, 0, no_agafar);
     public static JugadorsEquip agafar = new JugadorsEquip();
-    public static Equip agafar_equip = new Equip(0, 0, 0, 0, jugadorsEquip);
+    public static Equip agafar_equip = new Equip(0, 0, 0, 0, agafar);
 
     public static void main(String[] argvs) {
         if (argvs.length != 3) {
             throw new IllegalArgumentException("Error while introduce the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
         }
-        pressupost = Integer.parseInt(argvs[0]);
+        int pressupost = Integer.parseInt(argvs[0]);
         n_threads = Integer.parseInt(argvs[2]);
+
+        Mercat mercat = new Mercat();
+        JugadorsEquip jugadorsEquip = new JugadorsEquip();
+        Equip equip = new Equip(id_equips, 0, 0, pressupost, jugadorsEquip);
+        Equip equipOptim;
 
         //Reads the file (mercatXj.csv)
         try {
-            System.out.println("---------- Llegint el fitxer: " + argvs[1] + " ----------");
+            System.out.println("----------\nLlegint el fitxer: " + argvs[1]);
+            System.out.println("----------\nLlista de jugadors del mercat:");
             mercat = LlegirFitxerJugadors(argvs[1]);
         } catch (Exception e) {
             System.out.println("ERROR: Error reading the file.");
         }
         // Calculates the best team
-        System.out.println("---------- Calculant l'equip òptim ----------");
-        equip = new Equip(0, 0, 0, pressupost, jugadorsEquip);
+        System.out.println("----------\nCalculant l'equip òptim...");
         equipOptim = calcularEquipOptim(mercat, equip, (mercat.NJugadors - 1));
         System.out.println("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
@@ -72,18 +71,10 @@ public class Manfutc {
 
                 // Setting player's position
                 switch (field[2]) {
-                    case "Portero" -> {
-                        jugador.setPosicio(TJugador.Porter);
-                    }
-                    case "Defensa" -> {
-                        jugador.setPosicio(TJugador.Defensa);
-                    }
-                    case "Medio" -> {
-                        jugador.setPosicio(TJugador.Migcampista);
-                    }
-                    case "Delantero" -> {
-                        jugador.setPosicio(TJugador.Davanter);
-                    }
+                    case "Portero" -> jugador.setPosicio(TJugador.Porter);
+                    case "Defensa" -> jugador.setPosicio(TJugador.Defensa);
+                    case "Medio" -> jugador.setPosicio(TJugador.Migcampista);
+                    case "Delantero" -> jugador.setPosicio(TJugador.Davanter);
                     default -> System.err.println("ERROR: Invalid player type.");
                 }
                 // Setting player's price
@@ -108,41 +99,41 @@ public class Manfutc {
 
     // Calculates the best team
     public static Equip calcularEquipOptim(Mercat mercat, Equip equip, int index) {
-        System.out.println("Jugador: " + mercat.getJugador(index).nom + "\n");
         if (index == 0) {
-            if (equip.playerFits(mercat.getJugador(index))) {
+            if (equip.playerFits(mercat.getJugador(index)) && equip.isRepeated(mercat.getJugador(index))) {
                 equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
                 equip.id = id_equips;
                 id_equips++;
             }
         } else {
             // In the case we don't pick the player
-            System.out.println("No agafem el jugador. \n");
             no_agafar_equip.id = equip.id;
             no_agafar_equip.valor = equip.valor;
             no_agafar_equip.cost = equip.cost;
             no_agafar_equip.pressupost = equip.pressupost;
-            no_agafar_equip.jugadorsEquip = no_agafar;
-            val_no_agafar = calcularEquipOptim(mercat, no_agafar_equip, index - 1).valor;
+            no_agafar_equip.jugadorsEquip = equip.jugadorsEquip;
+            calcularEquipOptim(mercat, no_agafar_equip, index - 1);
 
             // In the case we pick the player
-            if (equip.playerFits(mercat.getJugador(index)) && !equip.isRepeated(mercat.getJugador(index))) {
-                System.out.println("Agafem el jugador \n");
+            if (equip.playerFits(mercat.getJugador(index)) && equip.isRepeated(mercat.getJugador(index))) {
                 agafar_equip.id = equip.id;
-                agafar_equip.valor = equip.valor + mercat.getJugador(index).valor;
-                agafar_equip.cost = equip.cost + mercat.getJugador(index).preu;
-                agafar_equip.pressupost = (equip.pressupost - mercat.getJugador(index).preu);
+                agafar_equip.valor = equip.valor + (mercat.getJugador(index).valor);
+                agafar_equip.cost = equip.cost + (mercat.getJugador(index).preu);
+                agafar_equip.pressupost = equip.pressupost - (mercat.getJugador(index).preu);
+                agafar_equip.jugadorsEquip = equip.jugadorsEquip;
                 agafar_equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
-                val_agafar = calcularEquipOptim(mercat, agafar_equip, index - 1).valor;
+                calcularEquipOptim(mercat, agafar_equip, index - 1);
             }
 
             // We check which equip fits better
-            if (val_agafar == 0 || val_no_agafar > val_agafar) {
+            if (agafar_equip.valor == 0 || no_agafar_equip.valor > agafar_equip.valor) {
+                equip.id = no_agafar_equip.id;
                 equip.valor = no_agafar_equip.valor;
                 equip.cost = no_agafar_equip.cost;
                 equip.pressupost = no_agafar_equip.pressupost;
                 equip.jugadorsEquip = no_agafar_equip.jugadorsEquip;
             } else {
+                equip.id = agafar_equip.id;
                 equip.valor = agafar_equip.valor;
                 equip.cost = agafar_equip.cost;
                 equip.pressupost = agafar_equip.pressupost;
