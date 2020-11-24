@@ -58,27 +58,19 @@ public class Equip {
         System.out.println("Jugadors de l'equip òpim: ");
         System.out.println("   - Porters: ");
         for (Jugador porter : jugadorsEquip.porters) {
-            if (porter != null) {
                 System.out.println(porter.nom);
-            }
         }
         System.out.println("   - Defenses: ");
         for (Jugador defensa : jugadorsEquip.defenses) {
-            if (defensa != null) {
                 System.out.println(defensa.nom);
-            }
         }
         System.out.println("   - Migcampistes: ");
         for (Jugador migcampista : jugadorsEquip.migcampistes) {
-            if (migcampista != null) {
                 System.out.println(migcampista.nom);
-            }
         }
         System.out.println("   - Davanters: ");
         for (Jugador davanter : jugadorsEquip.davanters) {
-            if (davanter != null) {
                 System.out.println(davanter.nom);
-            }
         }
     }
 }

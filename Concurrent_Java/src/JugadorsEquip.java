@@ -60,6 +60,7 @@ public class JugadorsEquip {
         }
     }
 
+    // Copies all the diferent player's array into an array together
     public void getJugadors() {
         if (MAX_PORTERS >= 0) System.arraycopy(porters, 0, jugadors, 0, MAX_PORTERS);
         if (MAX_DEFENSES >= 0) System.arraycopy(defenses, 0, jugadors, 0, MAX_DEFENSES);
