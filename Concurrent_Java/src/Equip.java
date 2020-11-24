@@ -5,7 +5,7 @@ public class Equip {
     public int pressupost;
     public JugadorsEquip jugadorsEquip;
 
-    public Equip (int id, int valor, int cost, int pressupost, JugadorsEquip jugadorsEquip) {
+    public Equip(int id, int valor, int cost, int pressupost, JugadorsEquip jugadorsEquip) {
         this.id = id;
         this.valor = valor;
         this.cost = cost;
@@ -43,11 +43,11 @@ public class Equip {
         if (jugador != null) {
             for (int i = 0; i < jugadorsEquip.MAX_JUGADORS; i++) {
                 if (jugador == jugadorsEquip.getPlayer(i)) {
-                    return false;
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     // Prints the players of the team
@@ -58,19 +58,27 @@ public class Equip {
         System.out.println("Jugadors de l'equip òpim: ");
         System.out.println("Porters: ");
         for (Jugador porter : jugadorsEquip.porters) {
+            if (porter != null) {
                 System.out.println("   - " + porter.nom);
+            }
         }
         System.out.println("Defenses: ");
         for (Jugador defensa : jugadorsEquip.defenses) {
+            if (defensa != null) {
                 System.out.println("   - " + defensa.nom);
+            }
         }
         System.out.println("Migcampistes: ");
         for (Jugador migcampista : jugadorsEquip.migcampistes) {
+            if (migcampista != null) {
                 System.out.println("   - " + migcampista.nom);
+            }
         }
         System.out.println("Davanters: ");
         for (Jugador davanter : jugadorsEquip.davanters) {
+            if (davanter != null) {
                 System.out.println("   - " + davanter.nom);
+            }
         }
     }
 }

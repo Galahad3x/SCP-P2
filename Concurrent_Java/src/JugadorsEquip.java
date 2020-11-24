@@ -73,4 +73,15 @@ public class JugadorsEquip {
         getJugadors();
         return jugadors[index];
     }
+
+    public JugadorsEquip copy(){
+        JugadorsEquip new_jugadors = new JugadorsEquip();
+        getJugadors();
+        for(Jugador jugador : this.jugadors){
+            if(jugador != null) {
+                new_jugadors.addPlayer(jugador);
+            }
+        }
+        return new_jugadors;
+    }
 }
