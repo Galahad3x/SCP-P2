@@ -125,6 +125,7 @@ public class Manfutc {
             no_agafar_equip.jugadorsEquip = no_agafar;
             val_no_agafar = calcularEquipOptim(mercat, no_agafar_equip, index - 1).valor;
 
+            // In the case we pick the player
             if (equip.playerFits(mercat.getJugador(index)) && !equip.isRepeated(mercat.getJugador(index))) {
                 System.out.println("Agafem el jugador \n");
                 agafar_equip.id = equip.id;
@@ -160,15 +161,7 @@ public class Manfutc {
 
         @Override
         public void run() {
-            for (int i = 0; i < (equip.jugadorsEquip.MAX_JUGADORS); i++) {
-                agafar.addPlayer(equip.jugadorsEquip.getPlayer(i));
-            }
-            agafar_equip.valor = equip.valor;
-            agafar_equip.cost = equip.cost;
-            agafar_equip.pressupost = equip.pressupost;
-            agafar_equip.jugadorsEquip = agafar;
-            agafar_equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
-            val_agafar = calcularEquipOptim(mercat, agafar_equip, index - 1).valor;
+
         }
     }
 }

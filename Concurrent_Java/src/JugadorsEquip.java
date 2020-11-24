@@ -25,6 +25,7 @@ public class JugadorsEquip {
                 for (int i = 0; i < porters.length; i++) {
                     if (porters[i] == null) {
                         porters[i] = jugador;
+                        break;
                     }
                 }
                 numPorters++;
@@ -33,6 +34,7 @@ public class JugadorsEquip {
                 for (int i = 0; i < defenses.length; i++) {
                     if (defenses[i] == null) {
                         defenses[i] = jugador;
+                        break;
                     }
                 }
                 numDefenses++;
@@ -41,6 +43,7 @@ public class JugadorsEquip {
                 for (int i = 0; i < migcampistes.length; i++) {
                     if (migcampistes[i] == null) {
                         migcampistes[i] = jugador;
+                        break;
                     }
                 }
                 numMigcampistes++;
@@ -49,6 +52,7 @@ public class JugadorsEquip {
                 for (int i = 0; i < davanters.length; i++) {
                     if (davanters[i] == null) {
                         davanters[i] = jugador;
+                        break;
                     }
                 }
                 numDavanters++;
