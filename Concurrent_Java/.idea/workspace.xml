@@ -54,7 +54,7 @@
     <configuration name="Manfutc" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Manfutc" />
       <module name="Concurrent_Java" />
-      <option name="PROGRAM_PARAMETERS" value="100 mercat15j.csv 1" />
+      <option name="PROGRAM_PARAMETERS" value="1000 mercat15j.csv 1" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -89,10 +89,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606222727119">
+    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606223049216">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606222727119" />
+    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606223049216" />
     <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1606037926131">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -105,22 +105,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="260" y="278" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604707158642" />
-    <state width="914" height="271" key="GridCell.Tab.0.bottom" timestamp="1606222946815">
+    <state width="1877" height="273" key="GridCell.Tab.0.bottom" timestamp="1606227881366">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="271" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606222946815" />
-    <state width="914" height="271" key="GridCell.Tab.0.center" timestamp="1606222946815">
+    <state width="1877" height="273" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606227881366" />
+    <state width="1877" height="273" key="GridCell.Tab.0.center" timestamp="1606227881366">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="271" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606222946815" />
-    <state width="914" height="271" key="GridCell.Tab.0.left" timestamp="1606222946815">
+    <state width="1877" height="273" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606227881366" />
+    <state width="1877" height="273" key="GridCell.Tab.0.left" timestamp="1606227881366">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="271" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606222946815" />
-    <state width="914" height="271" key="GridCell.Tab.0.right" timestamp="1606222946815">
+    <state width="1877" height="273" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606227881366" />
+    <state width="1877" height="273" key="GridCell.Tab.0.right" timestamp="1606227881366">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="914" height="271" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606222946815" />
+    <state width="1877" height="273" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606227881366" />
     <state width="914" height="346" key="GridCell.Tab.1.bottom" timestamp="1606222752993">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
