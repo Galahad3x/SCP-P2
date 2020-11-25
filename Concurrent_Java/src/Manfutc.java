@@ -120,9 +120,9 @@ public class Manfutc {
             }
         } else {
 
-            JugadorsEquip no_agafar = new JugadorsEquip();
+            JugadorsEquip no_agafar = equip.jugadorsEquip.copy();
             Equip no_agafar_equip = new Equip(equip.id, equip.valor, equip.cost, equip.pressupost, no_agafar);
-            JugadorsEquip agafar = new JugadorsEquip();
+            JugadorsEquip agafar = equip.jugadorsEquip.copy();
             Equip agafar_equip = new Equip(equip.id, equip.valor, equip.cost, equip.pressupost, agafar);
 
             int val_agafar = 0;

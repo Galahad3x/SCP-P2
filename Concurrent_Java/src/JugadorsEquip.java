@@ -76,10 +76,24 @@ public class JugadorsEquip {
 
     public JugadorsEquip copy(){
         JugadorsEquip new_jugadors = new JugadorsEquip();
-        getJugadors();
-        for(Jugador jugador : this.jugadors){
-            if(jugador != null) {
-                new_jugadors.addPlayer(jugador);
+        for (Jugador porter : porters) {
+            if (porter != null) {
+                new_jugadors.addPlayer(porter);
+            }
+        }
+        for (Jugador defensa : defenses) {
+            if (defensa != null) {
+                new_jugadors.addPlayer(defensa);
+            }
+        }
+        for (Jugador migcamp : migcampistes) {
+            if (migcamp != null) {
+                new_jugadors.addPlayer(migcamp);
+            }
+        }
+        for (Jugador davanter : davanters) {
+            if (davanter != null) {
+                new_jugadors.addPlayer(davanter);
             }
         }
         return new_jugadors;
