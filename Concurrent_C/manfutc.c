@@ -311,7 +311,9 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				}
 			}
 			
-			active_threads[child_thread] = 1;
+			if(child_thread != -1){
+				active_threads[child_thread] = 1;
+			}
 			pthread_mutex_unlock(&mutex_actives);
 			
 			//Si hi ha un thread lliure
