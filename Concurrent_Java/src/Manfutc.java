@@ -45,7 +45,7 @@ public class Manfutc {
         }
         // Calculates the best team
         System.out.println("----------\nCalculant l'equip òptim...");
-        equipOptim = calcularEquipOptim(equip, (mercat.NJugadors - 1));
+        equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1);
         System.out.println("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
     }
@@ -114,12 +114,14 @@ public class Manfutc {
     public static Equip calcularEquipOptim(Equip equip, int index) throws InterruptedException {
         if (index == 0) {
             if (equip.playerFits(mercat.getJugador(index)) && !equip.isRepeated(mercat.getJugador(index))) {
+                equip.valor = equip.valor + (mercat.getJugador(index).valor);
+                equip.cost = equip.cost + (mercat.getJugador(index).preu);
+                equip.pressupost = equip.pressupost - (mercat.getJugador(index).preu);
                 equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
                 equip.id = id_equips;
                 id_equips++;
             }
         } else {
-
             JugadorsEquip no_agafar = equip.jugadorsEquip.copy();
             Equip no_agafar_equip = new Equip(equip.id, equip.valor, equip.cost, equip.pressupost, no_agafar);
             JugadorsEquip agafar = equip.jugadorsEquip.copy();
@@ -150,7 +152,6 @@ public class Manfutc {
                     agafar_equip.valor = equip.valor + (mercat.getJugador(index).valor);
                     agafar_equip.cost = equip.cost + (mercat.getJugador(index).preu);
                     agafar_equip.pressupost = equip.pressupost - (mercat.getJugador(index).preu);
-                    agafar_equip.jugadorsEquip = equip.jugadorsEquip.copy();
                     agafar_equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
                     // CalcularEquipOptim modificara agafar_equip
                     val_agafar = calcularEquipOptim(agafar_equip, index - 1).valor;
@@ -162,12 +163,12 @@ public class Manfutc {
             no_agafar_equip.valor = equip.valor;
             no_agafar_equip.cost = equip.cost;
             no_agafar_equip.pressupost = equip.pressupost;
-            no_agafar_equip.jugadorsEquip = equip.jugadorsEquip.copy();
             calcularEquipOptim(no_agafar_equip, index - 1);
 
             if (t_index != -1) {
                 threads_arr[t_index].join();
-                agafar_equip = thread_return[t_index];
+                agafar_equip = thread_return[t_index].copy();
+                val_agafar = agafar_equip.valor;
                 threads_arr[t_index] = null;
                 threads_act[t_index] = false;
             }

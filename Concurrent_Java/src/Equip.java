@@ -50,6 +50,10 @@ public class Equip {
         return false;
     }
 
+    public Equip copy(){
+        return new Equip(this.id, this.valor, this.cost, this.pressupost, this.jugadorsEquip.copy());
+    }
+
     // Prints the players of the team
     public void printTeam() {
         System.out.println("ID de l'equip: " + id);
