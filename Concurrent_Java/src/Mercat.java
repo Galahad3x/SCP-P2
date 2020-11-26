@@ -1,3 +1,11 @@
+/* ---------------------------------------------------------------
+Práctica 1.
+Código fuente: Mercat.java
+Grau Informàtica
+48051307Y Joel Aumedes Serrano
+78103400T Joel Farré Cortés
+---------------------------------------------------------------*/
+
 public class Mercat {
     int NJugadors;
     Jugador[] jugadors;

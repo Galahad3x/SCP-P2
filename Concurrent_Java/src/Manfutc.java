@@ -1,3 +1,11 @@
+/* ---------------------------------------------------------------
+Práctica 1.
+Código fuente: Manfutc.java
+Grau Informàtica
+48051307Y Joel Aumedes Serrano
+78103400T Joel Farré Cortés
+---------------------------------------------------------------*/
+
 import java.io.*;
 
 public class Manfutc {

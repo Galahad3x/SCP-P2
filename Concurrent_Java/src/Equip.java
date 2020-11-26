@@ -1,3 +1,11 @@
+/* ---------------------------------------------------------------
+Práctica 1.
+Código fuente: Equip.java
+Grau Informàtica
+48051307Y Joel Aumedes Serrano
+78103400T Joel Farré Cortés
+---------------------------------------------------------------*/
+
 public class Equip {
     public int id;
     public int valor;

@@ -1,3 +1,11 @@
+/* ---------------------------------------------------------------
+Práctica 1.
+Código fuente: JugadorsEquip.java
+Grau Informàtica
+48051307Y Joel Aumedes Serrano
+78103400T Joel Farré Cortés
+---------------------------------------------------------------*/
+
 public class JugadorsEquip {
     int MAX_PORTERS = 1;
     int MAX_DEFENSES = 3;

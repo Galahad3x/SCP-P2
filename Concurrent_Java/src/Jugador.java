@@ -1,3 +1,11 @@
+/* ---------------------------------------------------------------
+Práctica 1.
+Código fuente: Jugador.java
+Grau Informàtica
+48051307Y Joel Aumedes Serrano
+78103400T Joel Farré Cortés
+---------------------------------------------------------------*/
+
 enum TJugador {Porter, Defensa, Migcampista, Davanter}
 
 public class Jugador {
