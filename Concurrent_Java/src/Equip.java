@@ -19,21 +19,16 @@ public class Equip {
             return false;
         } else {
             switch (jugador.posicio) {
-                case Porter -> {
+                case Porter:
                     return jugadorsEquip.numPorters < jugadorsEquip.MAX_PORTERS;
-                }
-                case Defensa -> {
+                case Defensa:
                     return jugadorsEquip.numDefenses < jugadorsEquip.MAX_DEFENSES;
-                }
-                case Migcampista -> {
+                case Migcampista:
                     return jugadorsEquip.numMigcampistes < jugadorsEquip.MAX_MIGCAMPISTES;
-                }
-                case Davanter -> {
+                case Davanter:
                     return jugadorsEquip.numDavanters < jugadorsEquip.MAX_DAVANTERS;
-                }
-                default -> {
+                default:
                     return false;
-                }
             }
         }
     }

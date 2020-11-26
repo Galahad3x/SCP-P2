@@ -20,41 +20,36 @@ public class JugadorsEquip {
 
     // Adds a player
     public void addPlayer(Jugador jugador) {
-        switch (jugador.posicio) {
-            case Porter ->  {
-                for (int i = 0; i < porters.length; i++) {
-                    if (porters[i] == null) {
-                        porters[i] = jugador;
-                        numPorters++;
-                        break;
-                    }
+        if (jugador.posicio == TJugador.Porter){
+            for (int i = 0; i < porters.length; i++) {
+                if (porters[i] == null) {
+                    porters[i] = jugador;
+                    numPorters++;
+                    break;
                 }
             }
-            case Defensa ->  {
-                for (int i = 0; i < defenses.length; i++) {
-                    if (defenses[i] == null) {
-                        defenses[i] = jugador;
-                        numDefenses++;
-                        break;
-                    }
+        }else if(jugador.posicio == TJugador.Defensa) {
+            for (int i = 0; i < defenses.length; i++) {
+                if (defenses[i] == null) {
+                    defenses[i] = jugador;
+                    numDefenses++;
+                    break;
                 }
             }
-            case Migcampista ->  {
-                for (int i = 0; i < migcampistes.length; i++) {
-                    if (migcampistes[i] == null) {
-                        migcampistes[i] = jugador;
-                        numMigcampistes++;
-                        break;
-                    }
+        }else if(jugador.posicio == TJugador.Migcampista) {
+            for (int i = 0; i < migcampistes.length; i++) {
+                if (migcampistes[i] == null) {
+                    migcampistes[i] = jugador;
+                    numMigcampistes++;
+                    break;
                 }
             }
-            case Davanter ->  {
-                for (int i = 0; i < davanters.length; i++) {
-                    if (davanters[i] == null) {
-                        davanters[i] = jugador;
-                        numDavanters++;
-                        break;
-                    }
+        }else{
+            for (int i = 0; i < davanters.length; i++) {
+                if (davanters[i] == null) {
+                    davanters[i] = jugador;
+                    numDavanters++;
+                    break;
                 }
             }
         }

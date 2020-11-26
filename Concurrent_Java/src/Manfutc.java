@@ -83,12 +83,14 @@ public class Manfutc {
                 jugador.setNom(field[1]);
 
                 // Setting player's position
-                switch (field[2]) {
-                    case "Portero" -> jugador.setPosicio(TJugador.Porter);
-                    case "Defensa" -> jugador.setPosicio(TJugador.Defensa);
-                    case "Medio" -> jugador.setPosicio(TJugador.Migcampista);
-                    case "Delantero" -> jugador.setPosicio(TJugador.Davanter);
-                    default -> System.err.println("ERROR: Invalid player type.");
+                if (field[2].equals("Portero")) {
+                    jugador.setPosicio(TJugador.Porter);
+                }else if(field[2].equals("Defensa")){
+                    jugador.setPosicio(TJugador.Defensa);
+                }else if(field[2].equals("Medio")) {
+                    jugador.setPosicio(TJugador.Migcampista);
+                }else{
+                    jugador.setPosicio(TJugador.Davanter);
                 }
                 // Setting player's price
                 jugador.setPreu(Integer.parseInt(field[3]));
