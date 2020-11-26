@@ -371,6 +371,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			int ret;
 			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
 				printf("ERROR: Error al fer un join %i\n", ret);
+				exit(-1);
 			}
 			
 			active_threads[child_thread] = 0;

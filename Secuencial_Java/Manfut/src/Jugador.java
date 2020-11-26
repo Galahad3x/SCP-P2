@@ -1,5 +1,3 @@
-package eps.udl.cat;
-
 enum TipusJug {
     JPorter,
     JDefensor,

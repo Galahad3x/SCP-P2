@@ -1,7 +1,3 @@
-package eps.udl.cat;
-
-
-
 public enum Error {
 
     COk, CError, CErrorPlayerType, CErrorOpenInputFile, CErrorReadingFile;

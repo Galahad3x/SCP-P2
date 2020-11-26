@@ -1,5 +1,3 @@
-package eps.udl.cat;
-
 import java.util.ArrayList;
 import java.io.*;
 
@@ -107,7 +105,7 @@ public class Market {
     }
 
 
-    JugadorsEquip  CalcularEquipOptim(int PresupostFitxatges)
+    public JugadorsEquip CalcularEquipOptim(int PresupostFitxatges)
     {
         long maxbits;
         int equip, primerEquip, ultimEquip, first, end;

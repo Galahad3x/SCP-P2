@@ -1,5 +1,3 @@
-package eps.udl.cat;
-
 class IdEquip {
     static int  IdCount=1;
 

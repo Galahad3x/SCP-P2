@@ -1,13 +1,12 @@
-package eps.udl.cat;
-
 public class Manfut {
 
-    public static void main(String[] args)
-    {
-        Market          PlayersMarket;
-        int             PresupostFitxatges;
-        JugadorsEquip   MillorEquip;
-        Error           err;
+    public static Market PlayersMarket;
+
+    public static void main(String[] args){
+
+        int PresupostFitxatges;
+        JugadorsEquip MillorEquip;
+        Error err;
 
         // Procesar argumentos.
         if (args.length<2)

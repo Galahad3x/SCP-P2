@@ -156,6 +156,7 @@ public class Manfutc {
                 }
                 if (t_index != -1) {
                     threads_arr[t_index] = new ManfutcThreads(equip, index, t_index);
+                    threads_arr[t_index].setDaemon(true);
                     threads_arr[t_index].start();
                 } else {
                     agafar_equip.id = equip.id;
