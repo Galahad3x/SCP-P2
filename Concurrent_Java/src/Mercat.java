@@ -3,7 +3,7 @@ public class Mercat {
     Jugador[] jugadors;
 
     public Mercat() {
-        this.jugadors = new Jugador[50];
+        this.jugadors = new Jugador[100];
     }
 
     // Gets a player in a specific position
