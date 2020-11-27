@@ -19,7 +19,7 @@ public class Manfutc {
     public static boolean[] threads_act;
     public static Equip[] thread_return;
 
-    public static final Object lock = new Object();
+    public static int lock = 0;
 
     // Main function
     public static void main(String[] argvs) throws InterruptedException {
@@ -145,17 +145,20 @@ public class Manfutc {
 
             // In the case we pick the player
             if (equip.playerFits(mercat.getJugador(index)) && !equip.isRepeated(mercat.getJugador(index))) {
-                synchronized (lock) {
-                    for (int i = 0; i < n_threads; i++) {
-                        if (!threads_act[i]) {
-                            t_index = i;
-                            break;
-                        }
-                    }
-                    if (t_index != -1) {
-                        threads_act[t_index] = true;
+                while (lock == 1) {
+                    Thread.sleep(200);
+                }
+                lock = 1;
+                for (int i = 0; i < n_threads; i++) {
+                    if (!threads_act[i]) {
+                        t_index = i;
+                        break;
                     }
                 }
+                if (t_index != -1) {
+                    threads_act[t_index] = true;
+                }
+                lock = 0;
                 if (t_index != -1) {
                     threads_arr[t_index] = new ManfutcThreads(equip, index, t_index);
                     threads_arr[t_index].setDaemon(true);

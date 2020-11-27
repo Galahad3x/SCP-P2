@@ -84,8 +84,8 @@ int debug = 0;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
-static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mutex_actives = PTHREAD_MUTEX_INITIALIZER;
+volatile int ids_sync = 0;
+volatile int actives_sync = 0;
 
 //Function headers
 int jugador_apte(struct Equip equip, struct Jugador jugador);
@@ -315,13 +315,16 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		}
 		
 		//Assign an ID to this completed team
-		//We use a mutex to avoid different teams having the same IDs
-		pthread_mutex_lock(&mutex_ids);
+		//We use a variable to avoid different teams having the same IDs
+		while(ids_sync == 1){
+			sleep(0.2);
+		}
+		ids_sync = 1;
 		
 		equip -> id = id_equips;
 		id_equips++;
 		
-		pthread_mutex_unlock(&mutex_ids);
+		ids_sync = 0;
 		return equip -> valor;
 	}else{
 		//If the index is not 0, we need to account for the players we haven't checked yet
@@ -335,9 +338,12 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			}
 			
-			//We use a mutex to check for free space for a thread, so different threads don't try to
+			//We use a variable to syncronize checking for free space for a thread, so different threads don't try to
 			//create different threads on the same space
-			pthread_mutex_lock(&mutex_actives);
+			while(actives_sync == 1){
+				sleep(0.2);
+			}
+			actives_sync = 1;
 			
 			for(int i = 0; i < numero_threads; i++){
 				if(active_threads[i] == 0){
@@ -350,7 +356,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			if(child_thread != -1){
 				active_threads[child_thread] = 1;
 			}
-			pthread_mutex_unlock(&mutex_actives);
+			actives_sync = 0;
 			
 			//If we have space for a thread
 			if(child_thread != -1){
