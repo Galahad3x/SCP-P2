@@ -14,23 +14,26 @@ Grau Informàtica
 #include <fcntl.h>
 #include <pthread.h>
 
+//Non-modified variables used to create fixed-size arrays
 #define ASSUMED_MAX_THREADS 10
-
 #define MAX_PLAYERS_IN_MARKET 200
 #define MAX_PLAYER_NAMES 50
 #define MAX_MARKET_LINE 256
 #define MAX_TEAM_NAME 5
 
+//F7 Lineup
 #define MAX_PORTERS 1
 #define MAX_DEFENSES 3
 #define MAX_CENTRES 2
 #define MAX_DAVANTERS 1
 
+//Integer used to save a player's position
 #define PORTER 0
 #define DEFENSA 1
 #define CENTRE 2
 #define DAVANTER 3
 
+//Struct with a single player's data
 struct Jugador {
 	int id;
 	char nom[MAX_PLAYER_NAMES];
@@ -40,12 +43,14 @@ struct Jugador {
 	int valor;
 };
 
+//Struct to save market data
 struct Mercat {
 	struct Jugador jugadors[MAX_PLAYERS_IN_MARKET];
 	int num_jugadors;
 	int pressupost;
 };
 
+//Struct used inside Equip to save a reference to the players in the team
 struct JugadorsEquip {
 	struct Jugador porters[MAX_PORTERS];
 	int n_porters;
@@ -57,6 +62,7 @@ struct JugadorsEquip {
 	int n_davanters;
 };
 
+//Struct used to save a team's data
 struct Equip {
 	int id;
 	int valor;
@@ -65,11 +71,13 @@ struct Equip {
 	struct JugadorsEquip jugadors;
 };
 
+//Struct used to pass parameters to a thread
 struct ThreadArgs {
 	struct Equip equip;
 	int index;
 };
 
+//Global variable declarations
 struct Mercat mercat;
 int numero_threads;
 int debug = 0;
@@ -79,6 +87,7 @@ volatile int active_threads[ASSUMED_MAX_THREADS];
 static pthread_mutex_t mutex_ids = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t mutex_actives = PTHREAD_MUTEX_INITIALIZER;
 
+//Function headers
 int jugador_apte(struct Equip equip, struct Jugador jugador);
 void afegir_jugador(struct Equip *equip, struct Jugador jugador);
 void llegir_mercat(char *pathJugadors);
@@ -88,8 +97,10 @@ void *trobar_millor_equip_conc(void *argvs);
 void printar_jugador(struct Jugador jugador);
 void printar_equip(struct Equip equip);
 
+//Main function
 int main(int argc, char* argvs[]){
 	if(argc >= 4){
+		//Reading the passed parameters
 		mercat.pressupost = atoi(argvs[1]);
 		numero_threads = atoi(argvs[3]);
 		
@@ -106,12 +117,14 @@ int main(int argc, char* argvs[]){
 		if(debug == 1){
 			printf("Nom mercat: %s\n",argvs[2]);
 		}
+		//Writing data from the passed .csv file to our global market variable
 		llegir_mercat(argvs[2]);
 		
 		if(debug == 1){
 			printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
 		}
 		
+		//Creating an Equip in which we will save our final result.
 		struct Equip millor_equip;
 		millor_equip.id = 0;
 		millor_equip.valor = 0;
@@ -123,6 +136,7 @@ int main(int argc, char* argvs[]){
 		millor_equip.jugadors.n_davanters = 0;
 		
 		printf("\n");
+		//Find the best team and write it into millor_equip
 		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
 		
 		printar_equip(millor_equip);
@@ -132,6 +146,7 @@ int main(int argc, char* argvs[]){
 	}
 }
 
+//This function returns 0 if jugador can be in equip or -1 if it can't
 int jugador_apte(struct Equip equip, struct Jugador jugador){
 	if(jugador.preu > equip.pressupost){
 		if(debug == 1){
@@ -178,6 +193,7 @@ int jugador_apte(struct Equip equip, struct Jugador jugador){
 	}
 }
 
+//This function adds a player to a team, modifying its values
 void afegir_jugador(struct Equip *equip, struct Jugador jugador){
 	equip -> cost += jugador.preu;
 	equip -> valor += jugador.valor;
@@ -197,6 +213,7 @@ void afegir_jugador(struct Equip *equip, struct Jugador jugador){
 	}
 }
 
+//This function reads the .csv file and writes the players' information into our global variable mercat
 void llegir_mercat(char *pathJugadors){
 	char buffer[256];
 	int fdin;
@@ -264,6 +281,7 @@ void llegir_mercat(char *pathJugadors){
 	close(fdin);
 }
 
+//This function creates a deep copy of a JugadorsEquip object to be assigned later to a different team
 void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti){
 	for(int i = 0; i < origen.n_porters; i++){
 		desti -> porters[i] = origen.porters[i];
@@ -283,7 +301,11 @@ void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti)
 	desti -> n_davanters = origen.n_davanters;
 }
 
+//This is the recursive function that will calculate the best possible team, starting from the end of the market
+//until reaching the first player
 int trobar_millor_equip(struct Equip *equip, int index){
+	//If index is 0, we are checking for the last player
+	//Its value doesn't matter, if we can afford it, we will have more value with him on the team than without
 	if(index == 0){
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
@@ -292,6 +314,8 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			afegir_jugador(equip, mercat.jugadors[index]);
 		}
 		
+		//Assign an ID to this completed team
+		//We use a mutex to avoid different teams having the same IDs
 		pthread_mutex_lock(&mutex_ids);
 		
 		equip -> id = id_equips;
@@ -300,16 +324,19 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		pthread_mutex_unlock(&mutex_ids);
 		return equip -> valor;
 	}else{
-		
+		//If the index is not 0, we need to account for the players we haven't checked yet
 		int val_no_agafar, val_agafar = 0, child_thread = -1;
 		struct JugadorsEquip no_agafar,agafar;
 		struct Equip no_agafar_equip,agafar_equip;
-		//printf("Index %i\n",index);
+		
+		//If we can afford the player, we need to check what's better; having or not having him on the team
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
 				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			}
 			
+			//We use a mutex to check for free space for a thread, so different threads don't try to
+			//create different threads on the same space
 			pthread_mutex_lock(&mutex_actives);
 			
 			for(int i = 0; i < numero_threads; i++){
@@ -319,27 +346,28 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				}
 			}
 			
+			//If child_thread is -1, we don't have space for a new thread
 			if(child_thread != -1){
 				active_threads[child_thread] = 1;
 			}
 			pthread_mutex_unlock(&mutex_actives);
 			
-			//Si hi ha un thread lliure
+			//If we have space for a thread
 			if(child_thread != -1){
-				//Fer tot lo del thread
-				//Iniciar thread que faci tot aixo i retorni a val_agafar
-				//Parametres del thread equip i index
+				//Initialize thread parameters
 				struct ThreadArgs args;
 				args.equip = *equip;
 				args.index = index;
 				
+				//Create a thread that will compute the score of having the player on our team
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
 					if(debug == 1){
 						printf("ERROR: Error al crear un thread\n");
 						exit(-1);
 					}
 				}
-			}else{ //No hi ha espai als threads, ho fa el mateix thread
+			}else{ 
+				//There isn't space for a new thread, we compute both possible options from a single thread
 				deepcopy_jugadors(equip -> jugadors,&agafar);
 				
 				agafar_equip.valor = equip -> valor;
@@ -350,10 +378,13 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				
 				afegir_jugador(&agafar_equip, mercat.jugadors[index]);
 				
+				//Recursive call; having in mind that we now have more value on our team but less budget, 
+				//what's the best team we can create with the rest of the players
 				val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
 			}
 		}
 		
+		//The main branch we were using will, meanwhile, calculate the best outcome without having the player on the team
 		deepcopy_jugadors(equip -> jugadors,&no_agafar);
 		
 		no_agafar_equip.valor = equip -> valor;
@@ -361,28 +392,35 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		no_agafar_equip.id = equip -> id;
 		no_agafar_equip.pressupost = equip -> pressupost;
 		no_agafar_equip.jugadors = no_agafar;
+		
+		//Recursive call; having in mind that we now the same value and budget, but less players to choose from, 
+		//what's the best team we can create
 		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1);
 		
-		
+		//If we used another thread to calculate the best outcome with the player
 		if(child_thread != -1){
-			//principal fa join de l'altre
-			//El join te l'equip agafar
+			
 			struct Equip *agafar_thread;
 			int ret;
+			//We join the created thread, which will return the best team it could create while having the player
 			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
 				printf("ERROR: Error al fer un join %i\n", ret);
 				exit(-1);
 			}
 			
+			//We signal other threads that they can use this thread space now
 			active_threads[child_thread] = 0;
 			
 			agafar_equip = *agafar_thread;
 		}
-		//Els 2 threads han d'haver acabat
+		//We have both best possible outcomes
+		//Either by creating and joining another thread
+		//Or by calculating it on the same thread
 		if(debug == 1){
 			printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
 		}
 		
+		//We check which one of the outputs is the best, and modify equip to be it
 		if(val_agafar == 0 || val_no_agafar > val_agafar){
 			equip -> valor = no_agafar_equip.valor;
 			equip -> cost = no_agafar_equip.cost;
@@ -398,8 +436,9 @@ int trobar_millor_equip(struct Equip *equip, int index){
 	}
 }
 
+//This is the function that we will call when creating a new thread
 void *trobar_millor_equip_conc(void *argvs){
-	//Llegir parametres: equip i index
+	//Read the parameters
 	struct ThreadArgs args = *((struct ThreadArgs *) argvs);
 	
 	struct Equip equip = args.equip;
@@ -408,6 +447,7 @@ void *trobar_millor_equip_conc(void *argvs){
 	struct JugadorsEquip agafar;
 	struct Equip agafar_equip;
 	
+	//Add the player to the team
 	deepcopy_jugadors(equip.jugadors,&agafar);
 	
 	agafar_equip.valor = equip.valor;
@@ -418,15 +458,17 @@ void *trobar_millor_equip_conc(void *argvs){
 	
 	afegir_jugador(&agafar_equip, mercat.jugadors[index]);
 	
+	//Recursive call: Find the best team that includes this player
 	trobar_millor_equip(&agafar_equip, index - 1);
 	
+	//Return the calculated team
 	struct Equip *max_equip;
 	max_equip = (struct Equip *) malloc(sizeof(struct Equip));
 	*max_equip = agafar_equip;
 	return max_equip;
-	//Retornar equip maxim amb el jugador(valor incluit va dins)
 }
 
+//Used to print a player
 void printar_jugador(struct Jugador jugador){
 	printf("ID del jugador: %i\nNom: %s\nEquip original: %s\n",jugador.id,jugador.nom,jugador.nom_equip);
 	if(jugador.posicio == PORTER){
@@ -441,6 +483,7 @@ void printar_jugador(struct Jugador jugador){
 	printf("Preu: %i\nValor: %i\n",jugador.preu,jugador.valor);
 }
 
+//Used to print a team
 void printar_equip(struct Equip equip){
 	printf("ID de l'equip: %i\nCost total: %i\nValor: %i\n",equip.id, equip.cost, equip.valor);
 	printf("\nPORTERS:\n");

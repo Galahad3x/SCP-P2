@@ -16,7 +16,7 @@ public class Manfut {
         PlayersMarket = new Market();
 
          err = PlayersMarket.LlegirFitxerJugadors(args[1]);
-         if (err!=Error.COk)
+         if (err!=Error.COk)ld
              Error.showError("[Manfut] ERROR Reading players file.");
 
         // Calculate the best team.

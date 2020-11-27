@@ -20,20 +20,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b19fe25-15a0-4fc4-a17c-82b41ba31b3a" name="Default Changelist" comment="arreglat algo crec (?)">
-      <change beforePath="$PROJECT_DIR$/../.~lock.Informe.odt#" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Concurrent_C/manfutc" beforeDir="false" afterPath="$PROJECT_DIR$/../Concurrent_C/manfutc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Concurrent_C/manfutc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Concurrent_C/manfutc.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Equip$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Equip$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Equip.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Equip.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Jugador.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Jugador.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JugadorsEquip.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/JugadorsEquip.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Manfutc$ManfutcThreads.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Manfutc$ManfutcThreads.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Manfutc.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Manfutc.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Equip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Equip.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JugadorsEquip.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JugadorsEquip.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Manfutc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Manfutc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Mercat.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/Mercat.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TJugador.class" beforeDir="false" afterPath="$PROJECT_DIR$/src/TJugador.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Informe.odt" beforeDir="false" afterPath="$PROJECT_DIR$/../Informe.odt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Secuencial_Java/Manfut/src/Manfut.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Secuencial_Java/Manfut/src/Manfut.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../out" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../performance.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../performance.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../prova.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../res.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../res.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

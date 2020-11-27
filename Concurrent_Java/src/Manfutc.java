@@ -27,7 +27,7 @@ public class Manfutc {
             throw new IllegalArgumentException("Error while introduce the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
         }
         int pressupost = Integer.parseInt(argvs[0]);
-        n_threads = Integer.parseInt(argvs[2]);
+        n_threads = Integer.parseInt(argvs[2]) - 1;
 
         threads_arr = new ManfutcThreads[n_threads];
         threads_act = new boolean[n_threads];

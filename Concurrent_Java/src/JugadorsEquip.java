@@ -82,7 +82,7 @@ public class JugadorsEquip {
         return jugadors[index];
     }
 
-    // Copies all the players from another team into the team
+    // Creates a deep copy of JugadorsEquip
     public JugadorsEquip copy(){
         JugadorsEquip new_jugadors = new JugadorsEquip();
         for (Jugador porter : porters) {

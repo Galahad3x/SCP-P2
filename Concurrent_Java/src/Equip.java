@@ -54,7 +54,7 @@ public class Equip {
         return false;
     }
 
-    // Copies a team into another
+    // Creates a deep copy of the team, including its JugadorsEquip
     public Equip copy(){
         return new Equip(this.id, this.valor, this.cost, this.pressupost, this.jugadorsEquip.copy());
     }
