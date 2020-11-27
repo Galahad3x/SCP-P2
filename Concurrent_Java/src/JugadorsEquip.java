@@ -7,23 +7,28 @@ Grau Informàtica
 ---------------------------------------------------------------*/
 
 public class JugadorsEquip {
+
+    // Maximum number of players in a specific position
     int MAX_PORTERS = 1;
     int MAX_DEFENSES = 3;
     int MAX_MIGCAMPISTES = 2;
     int MAX_DAVANTERS = 1;
     int MAX_JUGADORS = MAX_PORTERS + MAX_DEFENSES + MAX_MIGCAMPISTES + MAX_DAVANTERS;
 
+    // Actual number of players in a specific position
     int numPorters = 0;
     int numDefenses = 0;
     int numMigcampistes = 0;
     int numDavanters = 0;
 
+    // Different arrays to save the players
     public Jugador[] porters = new Jugador[MAX_PORTERS];
     public Jugador[] defenses = new Jugador[MAX_DEFENSES];
     public Jugador[] migcampistes = new Jugador[MAX_MIGCAMPISTES];
     public Jugador[] davanters = new Jugador[MAX_DAVANTERS];
     public Jugador[] jugadors = new Jugador[MAX_JUGADORS];
 
+    // JugadorsEquip's constructor
     public JugadorsEquip () {}
 
     // Adds a player
@@ -71,12 +76,13 @@ public class JugadorsEquip {
         System.arraycopy(davanters, 0, jugadors, migcampistes.length, davanters.length);
     }
 
-    // Gets a player
+    // Gets a player from the team in a specific position
     public Jugador getPlayer(int index) {
         getJugadors();
         return jugadors[index];
     }
 
+    // Copies all the players from another team into the team
     public JugadorsEquip copy(){
         JugadorsEquip new_jugadors = new JugadorsEquip();
         for (Jugador porter : porters) {

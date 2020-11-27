@@ -16,27 +16,27 @@ public class Jugador {
     public String equip;
     public int valor;
 
-    // Set Player's id
+    // Sets Player's id
     public void setId(int id) { this.id = id; }
 
-    // Set Player's name
+    // Sets Player's name
     public void setNom(String nom) { this.nom = nom; }
 
-    // Set Player's position
+    // Sets Player's position
     public void setPosicio(TJugador posicio) { this.posicio = posicio; }
 
-    // Set Player's price
+    // Sets Player's price
     public void setPreu(int preu) { this.preu = preu; }
 
-    // Set Player's team
+    // Sets Player's team
     public void setEquip(String equip) { this.equip = equip; }
 
-    // Set Player's value
+    // Sets Player's value
     public void setValor(int valor) {
         this.valor = valor;
     }
 
-    // Prints the players of the team
+    // Prints a player
     public String printPlayer() {
         return "---------- JUGADOR ----------" +
                 "\nId: " + this.id +

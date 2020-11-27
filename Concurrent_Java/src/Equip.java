@@ -13,6 +13,7 @@ public class Equip {
     public int pressupost;
     public JugadorsEquip jugadorsEquip;
 
+    // Team's constructor
     public Equip(int id, int valor, int cost, int pressupost, JugadorsEquip jugadorsEquip) {
         this.id = id;
         this.valor = valor;
@@ -53,11 +54,12 @@ public class Equip {
         return false;
     }
 
+    // Copies a team into another
     public Equip copy(){
         return new Equip(this.id, this.valor, this.cost, this.pressupost, this.jugadorsEquip.copy());
     }
 
-    // Prints the players of the team
+    // Prints the parameters of the team
     public void printTeam() {
         System.out.println("ID de l'equip: " + id);
         System.out.println("Valor de l'equip: " + valor);

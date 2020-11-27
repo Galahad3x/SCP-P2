@@ -21,6 +21,7 @@ public class Manfutc {
 
     public static final Object lock = new Object();
 
+    // Main function
     public static void main(String[] argvs) throws InterruptedException {
         if (argvs.length != 3) {
             throw new IllegalArgumentException("Error while introduce the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
@@ -43,7 +44,7 @@ public class Manfutc {
         Equip equip = new Equip(id_equips, 0, 0, pressupost, jugadorsEquip);
         Equip equipOptim;
 
-        //Reads the file (mercatXj.csv)
+        // Reads the file (mercatXj.csv)
         try {
             System.out.println("----------\nLlegint el fitxer: " + argvs[1]);
             System.out.println("----------\nLlista de jugadors del mercat:");
@@ -58,7 +59,7 @@ public class Manfutc {
         equipOptim.printTeam();
     }
 
-    //Reads the file
+    // Reads the file entered by parameter
     public static Mercat LlegirFitxerJugadors(String fitxer) {
         Mercat mercat = new Mercat();
         FileInputStream fis = null;
@@ -81,16 +82,16 @@ public class Manfutc {
             while ((line = br.readLine()) != null) {
                 String[] field = line.split(";");
 
-                // Creating player
+                // Creates a new player to fill it
                 Jugador jugador = new Jugador();
 
-                // Setting player's id
+                // Sets the player's id
                 jugador.setId(Integer.parseInt(field[0]));
 
-                // Setting player's name
+                // Sets the player's name
                 jugador.setNom(field[1]);
 
-                // Setting player's position
+                // Sets the player's position
                 if (field[2].equals("Portero")) {
                     jugador.setPosicio(TJugador.Porter);
                 }else if(field[2].equals("Defensa")){
@@ -100,15 +101,16 @@ public class Manfutc {
                 }else{
                     jugador.setPosicio(TJugador.Davanter);
                 }
-                // Setting player's price
+                // Sets the player's price
                 jugador.setPreu(Integer.parseInt(field[3]));
 
-                // Setting player's team
+                // Sets the player's team
                 jugador.setEquip(field[4]);
 
-                // Setting player's value
+                // Sets the player's value
                 jugador.setValor(Integer.parseInt(field[5]));
 
+                // Adds the readed player into the market
                 mercat.jugadors[mercat.NJugadors] = jugador;
                 mercat.NJugadors++;
                 System.out.println(jugador.printPlayer());
@@ -164,7 +166,7 @@ public class Manfutc {
                     agafar_equip.cost = equip.cost + (mercat.getJugador(index).preu);
                     agafar_equip.pressupost = equip.pressupost - (mercat.getJugador(index).preu);
                     agafar_equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
-                    // CalcularEquipOptim modificara agafar_equip
+                    // CalcularEquipOptim modifies agafar_equip
                     val_agafar = calcularEquipOptim(agafar_equip, index - 1).valor;
                 }
             }
@@ -202,6 +204,7 @@ public class Manfutc {
         return equip;
     }
 
+    // Thread's class
     public static class ManfutcThreads extends Thread{
         public Equip equip;
         public int index;

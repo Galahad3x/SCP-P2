@@ -14,7 +14,7 @@ public class Mercat {
         this.jugadors = new Jugador[100];
     }
 
-    // Gets a player in a specific position
+    // Gets a player from the market in a specific position
     public Jugador getJugador(int index) {
         return this.jugadors[index];
     }
