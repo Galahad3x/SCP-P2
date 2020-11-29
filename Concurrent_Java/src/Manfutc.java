@@ -33,7 +33,7 @@ public class Manfutc {
         threads_act = new boolean[n_threads];
         thread_return = new Equip[n_threads];
 
-        for(int i = 0; i < n_threads;i++){
+        for (int i = 0; i < n_threads; i++) {
             threads_arr[i] = null;
             threads_act[i] = false;
             thread_return[i] = null;
@@ -94,11 +94,11 @@ public class Manfutc {
                 // Sets the player's position
                 if (field[2].equals("Portero")) {
                     jugador.setPosicio(TJugador.Porter);
-                }else if(field[2].equals("Defensa")){
+                } else if(field[2].equals("Defensa")) {
                     jugador.setPosicio(TJugador.Defensa);
-                }else if(field[2].equals("Medio")) {
+                } else if(field[2].equals("Medio")) {
                     jugador.setPosicio(TJugador.Migcampista);
-                }else{
+                } else {
                     jugador.setPosicio(TJugador.Davanter);
                 }
                 // Sets the player's price

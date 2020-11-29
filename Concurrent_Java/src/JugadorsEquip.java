@@ -41,7 +41,7 @@ public class JugadorsEquip {
                     break;
                 }
             }
-        }else if(jugador.posicio == TJugador.Defensa) {
+        }else if (jugador.posicio == TJugador.Defensa) {
             for (int i = 0; i < defenses.length; i++) {
                 if (defenses[i] == null) {
                     defenses[i] = jugador;
@@ -49,7 +49,7 @@ public class JugadorsEquip {
                     break;
                 }
             }
-        }else if(jugador.posicio == TJugador.Migcampista) {
+        } else if (jugador.posicio == TJugador.Migcampista) {
             for (int i = 0; i < migcampistes.length; i++) {
                 if (migcampistes[i] == null) {
                     migcampistes[i] = jugador;
@@ -57,7 +57,7 @@ public class JugadorsEquip {
                     break;
                 }
             }
-        }else{
+        } else {
             for (int i = 0; i < davanters.length; i++) {
                 if (davanters[i] == null) {
                     davanters[i] = jugador;
