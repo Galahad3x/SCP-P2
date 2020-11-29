@@ -219,6 +219,7 @@ public class Manfutc {
             this.t_index = t_index;
         }
 
+        // We override the thread's run function
         @Override
         public void run() {
             equip.id = equip.id;
