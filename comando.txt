@@ -1,1 +1,0 @@
-./performance.sh | awk '/^Con/ { print bash } /^Se/ { print bash } /^mercat/ { print bash }' 
