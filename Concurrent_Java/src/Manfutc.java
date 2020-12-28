@@ -24,10 +24,17 @@ public class Manfutc {
     // Main function
     public static void main(String[] argvs) throws InterruptedException {
         if (argvs.length != 3) {
-            throw new IllegalArgumentException("Error while introduce the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
+            throw new IllegalArgumentException("Error while introducing the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
         }
         int pressupost = Integer.parseInt(argvs[0]);
-        n_threads = Integer.parseInt(argvs[2]) - 1;
+        n_threads = Integer.parseInt(argvs[2]);
+        if(n_threads == 1){
+            System.out.println("Passat 1 thread, serà com fer-ho seqüencial.");
+        }else if(n_threads == 0){
+            System.out.println("Passats 0 threads, es farà amb 1.");
+            n_threads = 1;
+        }
+        n_threads -= 1;
 
         threads_arr = new ManfutcThreads[n_threads];
         threads_act = new boolean[n_threads];
@@ -47,7 +54,7 @@ public class Manfutc {
         // Reads the file (mercatXj.csv)
         try {
             System.out.println("----------\nLlegint el fitxer: " + argvs[1]);
-            System.out.println("----------\nLlista de jugadors del mercat:");
+            // System.out.println("----------\nLlista de jugadors del mercat:");
             mercat = LlegirFitxerJugadors(argvs[1]);
         } catch (Exception e) {
             System.out.println("ERROR: Error reading the file.");
@@ -113,7 +120,7 @@ public class Manfutc {
                 // Adds the readed player into the market
                 mercat.jugadors[mercat.NJugadors] = jugador;
                 mercat.NJugadors++;
-                System.out.println(jugador.printPlayer());
+                // System.out.println(jugador.printPlayer());
             }
             br.close();
         } catch (IOException e) {

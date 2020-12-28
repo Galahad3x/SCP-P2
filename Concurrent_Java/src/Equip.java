@@ -61,9 +61,9 @@ public class Equip {
 
     // Prints the parameters of the team
     public void printTeam() {
-        System.out.println("ID de l'equip: " + id);
-        System.out.println("Valor de l'equip: " + valor);
-        System.out.println("Cost de l'equip: " + cost);
+        System.out.println("ID de l'equip: " + this.id);
+        System.out.println("Valor de l'equip: " + this.valor);
+        System.out.println("Cost de l'equip: " + this.cost);
         System.out.println("Jugadors de l'equip òpim: ");
         System.out.println("Porters: ");
         for (Jugador porter : jugadorsEquip.porters) {

@@ -103,6 +103,14 @@ int main(int argc, char* argvs[]){
 		//Reading the passed parameters
 		mercat.pressupost = atoi(argvs[1]);
 		numero_threads = atoi(argvs[3]);
+		if (numero_threads == 1){
+			printf("Passat 1 thread, serà com fer-ho sequencial.");
+		}else if(numero_threads == 0){
+			printf("Passat 0 threads, es farà amb 1.");
+			numero_threads = 1;
+		}
+		numero_threads = numero_threads - 1;
+		
 		
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
@@ -141,7 +149,7 @@ int main(int argc, char* argvs[]){
 		
 		printar_equip(millor_equip);
 	}else{
-		printf("ERROR: Parametres incorrectes\n");
+		printf("ERROR: Paràmetres incorrectes\n");
 		exit(-1);
 	}
 }
@@ -418,6 +426,8 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			active_threads[child_thread] = 0;
 			
 			agafar_equip = *agafar_thread;
+			free(agafar_thread);
+			val_agafar = agafar_equip.valor;
 		}
 		//We have both best possible outcomes
 		//Either by creating and joining another thread
@@ -476,17 +486,17 @@ void *trobar_millor_equip_conc(void *argvs){
 
 //Used to print a player
 void printar_jugador(struct Jugador jugador){
-	printf("ID del jugador: %i\nNom: %s\nEquip original: %s\n",jugador.id,jugador.nom,jugador.nom_equip);
+	printf("Nom: %s\n",jugador.nom);
 	if(jugador.posicio == PORTER){
-		printf("Posició: Porter\n");
+		//printf("Posició: Porter\n");
 	}else if(jugador.posicio == DEFENSA){
-		printf("Posició: Defensa\n");
+		//printf("Posició: Defensa\n");
 	}else if(jugador.posicio == CENTRE){
-		printf("Posició: Centre\n");
+		//printf("Posició: Centre\n");
 	}else if(jugador.posicio == DAVANTER){
-		printf("Posició: Davanter\n");
+		//printf("Posició: Davanter\n");
 	}
-	printf("Preu: %i\nValor: %i\n",jugador.preu,jugador.valor);
+	//printf("Preu: %i\nValor: %i\n",jugador.preu,jugador.valor);
 }
 
 //Used to print a team
@@ -495,21 +505,21 @@ void printar_equip(struct Equip equip){
 	printf("\nPORTERS:\n");
 	for(int i = 0; i < equip.jugadors.n_porters;i++){
 		printar_jugador(equip.jugadors.porters[i]);
-		printf("\n");
+		//printf("\n");
 	}
 	printf("\nDEFENSES:\n");
 	for(int i = 0; i < equip.jugadors.n_defenses;i++){
 		printar_jugador(equip.jugadors.defenses[i]);
-		printf("\n");
+		//printf("\n");
 	}
 	printf("\nCENTRES:\n");
 	for(int i = 0; i < equip.jugadors.n_centres;i++){
 		printar_jugador(equip.jugadors.centres[i]);
-		printf("\n");
+		//printf("\n");
 	}
 	printf("\nDAVANTERS:\n");
 	for(int i = 0; i < equip.jugadors.n_davanters;i++){
 		printar_jugador(equip.jugadors.davanters[i]);
-		printf("\n");
+		//printf("\n");
 	}
 }

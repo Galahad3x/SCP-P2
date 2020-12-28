@@ -20,11 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b19fe25-15a0-4fc4-a17c-82b41ba31b3a" name="Default Changelist" comment="arreglat algo crec (?)">
-      <change beforePath="$PROJECT_DIR$/../Concurrent_C/manfutc" beforeDir="false" afterPath="$PROJECT_DIR$/../Concurrent_C/manfutc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Concurrent_C/manfutc.c" beforeDir="false" afterPath="$PROJECT_DIR$/../Concurrent_C/manfutc.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Manfutc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Manfutc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Informe.odt" beforeDir="false" afterPath="$PROJECT_DIR$/../Informe.odt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +57,7 @@
     <configuration name="Manfutc" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Manfutc" />
       <module name="Concurrent_Java" />
-      <option name="PROGRAM_PARAMETERS" value="300 mercat60j.csv 4" />
+      <option name="PROGRAM_PARAMETERS" value="200 mercat50j.csv 4" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -111,11 +107,11 @@
     <option name="LAST_COMMIT_MESSAGE" value="arreglat algo crec (?)" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1606590994526">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="248" y="84" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1609173024030">
+      <screen x="0" y="27" width="1366" height="741" />
     </state>
     <state x="725" y="262" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606590994526" />
-    <state x="248" y="84" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1606344163723" />
+    <state x="248" y="84" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1609173024030" />
     <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1606037926131">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -128,26 +124,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="260" y="278" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604707158642" />
-    <state width="1877" height="441" key="GridCell.Tab.0.bottom" timestamp="1606605934115">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1320" height="155" key="GridCell.Tab.0.bottom" timestamp="1609175283901">
+      <screen x="0" y="27" width="1366" height="741" />
     </state>
     <state width="1877" height="441" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606605934115" />
-    <state width="1366" height="711" key="GridCell.Tab.0.bottom/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1606399685434" />
-    <state width="1877" height="441" key="GridCell.Tab.0.center" timestamp="1606605934115">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1320" height="155" key="GridCell.Tab.0.bottom/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1609175283901" />
+    <state width="1320" height="155" key="GridCell.Tab.0.center" timestamp="1609175283901">
+      <screen x="0" y="27" width="1366" height="741" />
     </state>
     <state width="1877" height="441" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606605934115" />
-    <state width="1366" height="711" key="GridCell.Tab.0.center/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1606399685434" />
-    <state width="1877" height="441" key="GridCell.Tab.0.left" timestamp="1606605934115">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1320" height="155" key="GridCell.Tab.0.center/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1609175283901" />
+    <state width="1320" height="155" key="GridCell.Tab.0.left" timestamp="1609175283900">
+      <screen x="0" y="27" width="1366" height="741" />
     </state>
     <state width="1877" height="441" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606605934115" />
-    <state width="1366" height="711" key="GridCell.Tab.0.left/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1606399685434" />
-    <state width="1877" height="441" key="GridCell.Tab.0.right" timestamp="1606605934115">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1320" height="155" key="GridCell.Tab.0.left/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1609175283900" />
+    <state width="1320" height="155" key="GridCell.Tab.0.right" timestamp="1609175283901">
+      <screen x="0" y="27" width="1366" height="741" />
     </state>
     <state width="1877" height="441" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606605934115" />
-    <state width="1366" height="711" key="GridCell.Tab.0.right/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1606399685434" />
+    <state width="1320" height="155" key="GridCell.Tab.0.right/0.27.1366.741/1366.0.1366.768@0.27.1366.741" timestamp="1609175283901" />
     <state width="1366" height="711" key="GridCell.Tab.1.bottom" timestamp="1606399685435">
       <screen x="0" y="27" width="1366" height="741" />
     </state>
