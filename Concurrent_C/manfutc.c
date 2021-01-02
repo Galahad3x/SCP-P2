@@ -95,9 +95,11 @@ int debug = 0;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
 struct Estadistiques stats[ASSUMED_MAX_THREADS];
+struct Equip return_values[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
 pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t actives_sync = PTHREAD_MUTEX_INITIALIZER;
+pthread_barrier_t barriers[ASSUMED_MAX_THREADS];
 
 //Function headers
 int jugador_apte(struct Equip equip, struct Jugador jugador);
@@ -108,6 +110,7 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot);
 void *trobar_millor_equip_conc(void *argvs);
 void printar_jugador(struct Jugador jugador);
 void printar_equip(struct Equip equip);
+void print_stats(int slot_index);
 
 //Main function
 int main(int argc, char* argvs[]){
@@ -134,7 +137,7 @@ int main(int argc, char* argvs[]){
 			stats[i].cost_total_valides = 0;
 			stats[i].puntuacio_total_valides = 0;
 			stats[i].millor_puntuacio = 0;
-			stats[i].pitjor_puntuacio = 0;
+			stats[i].pitjor_puntuacio = 999999;
 		}
 		
 		if(argc >= 5){
@@ -169,6 +172,10 @@ int main(int argc, char* argvs[]){
 		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1, 0);
 		
 		printar_equip(millor_equip);
+		
+		for(int i = 0; i < numero_threads + 1; i++){
+			print_stats(i);
+		}
 		
 		pthread_mutex_destroy(&ids_sync);
 		pthread_mutex_destroy(&actives_sync);
@@ -346,6 +353,7 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			afegir_jugador(equip, mercat.jugadors[index]);
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
+			stats[thread_slot].combinacions_evaluades++;
 		}
 		
 		//Assign an ID to this completed team
@@ -374,7 +382,7 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		return equip -> valor;
 	}else{
 		//If the index is not 0, we need to account for the players we haven't checked yet
-		int val_no_agafar, val_agafar = 0, child_thread = -1;
+		int val_no_agafar, val_agafar = 0, child_thread = -1, child_slot = -1;
 		struct JugadorsEquip no_agafar,agafar;
 		struct Equip no_agafar_equip,agafar_equip;
 		
@@ -408,6 +416,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 				args.equip = *equip;
 				args.index = index;
 				args.thread_slot = child_thread + 1;
+				child_slot = child_thread + 1;
+				pthread_barrier_init(&barriers[child_slot],NULL,2);
 				
 				//Create a thread that will compute the score of having the player on our team
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
@@ -434,6 +444,7 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			}
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
+			stats[thread_slot].combinacions_evaluades++;
 		}
 		
 		//The main branch we were using will, meanwhile, calculate the best outcome without having the player on the team
@@ -451,11 +462,12 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		
 		//If we used another thread to calculate the best outcome with the player
 		if(child_thread != -1){
-			
-			struct Equip *agafar_thread;
+			pthread_barrier_wait(&barriers[child_slot]);
+			agafar_equip = return_values[child_slot];
+			pthread_barrier_destroy(&barriers[child_slot]);
 			int ret;
 			//We join the created thread, which will return the best team it could create while having the player
-			if((ret = pthread_join(threads[child_thread], (void **) &agafar_thread)) != 0){
+			if((ret = pthread_join(threads[child_thread], NULL) != 0)){
 				printf("ERROR: Error al fer un join %i\n", ret);
 				exit(-1);
 			}
@@ -463,8 +475,6 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			//We signal other threads that they can use this thread space now
 			active_threads[child_thread] = 0;
 			
-			agafar_equip = *agafar_thread;
-			free(agafar_thread);
 			val_agafar = agafar_equip.valor;
 		}
 		//We have both best possible outcomes
@@ -517,10 +527,9 @@ void *trobar_millor_equip_conc(void *argvs){
 	trobar_millor_equip(&agafar_equip, index - 1, thread_slot);
 	
 	//Return the calculated team
-	struct Equip *max_equip;
-	max_equip = (struct Equip *) malloc(sizeof(struct Equip));
-	*max_equip = agafar_equip;
-	return max_equip;
+	return_values[thread_slot] = agafar_equip;
+	pthread_barrier_wait(&barriers[thread_slot]);
+	return NULL;
 }
 
 //Used to print a player
@@ -561,4 +570,15 @@ void printar_equip(struct Equip equip){
 		printar_jugador(equip.jugadors.davanters[i]);
 		//printf("\n");
 	}
+}
+
+void print_stats(int slot_index){
+	printf("============= Parcials Slot %i =============\n",slot_index);
+	printf("Valides totals: %i No valides totals %i Totals %i\n",
+		stats[slot_index].combinacions_valides,
+		stats[slot_index].combinacions_no_valides,
+		stats[slot_index].combinacions_evaluades);
+	printf("Millor puntuació %i Pitjor puntuació %i\n",
+		stats[slot_index].millor_puntuacio,
+		stats[slot_index].pitjor_puntuacio);
 }
