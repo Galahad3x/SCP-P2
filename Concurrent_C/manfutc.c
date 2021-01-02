@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-Práctica 1.
+Práctica 2.
 Código fuente: manfutc.c
 Grau Informàtica
 48051307Y Joel Aumedes Serrano
@@ -75,6 +75,17 @@ struct Equip {
 struct ThreadArgs {
 	struct Equip equip;
 	int index;
+	int thread_slot;
+};
+
+struct Estadistiques {
+	int combinacions_valides;
+	int combinacions_evaluades;
+	int combinacions_no_valides;
+	int cost_total_valides;
+	int puntuacio_total_valides;
+	int millor_puntuacio;
+	int pitjor_puntuacio;
 };
 
 //Global variable declarations
@@ -83,16 +94,17 @@ int numero_threads;
 int debug = 0;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
+struct Estadistiques stats[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
-volatile int ids_sync = 0;
-volatile int actives_sync = 0;
+pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t actives_sync = PTHREAD_MUTEX_INITIALIZER;
 
 //Function headers
 int jugador_apte(struct Equip equip, struct Jugador jugador);
 void afegir_jugador(struct Equip *equip, struct Jugador jugador);
 void llegir_mercat(char *pathJugadors);
 void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti);
-int trobar_millor_equip(struct Equip *equip, int index);
+int trobar_millor_equip(struct Equip *equip, int index, int thread_slot);
 void *trobar_millor_equip_conc(void *argvs);
 void printar_jugador(struct Jugador jugador);
 void printar_equip(struct Equip equip);
@@ -114,6 +126,15 @@ int main(int argc, char* argvs[]){
 		
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
+		}
+		for(int i = 0; i < numero_threads + 1; i++){
+			stats[i].combinacions_valides = 0;
+			stats[i].combinacions_evaluades = 0;
+			stats[i].combinacions_no_valides = 0;
+			stats[i].cost_total_valides = 0;
+			stats[i].puntuacio_total_valides = 0;
+			stats[i].millor_puntuacio = 0;
+			stats[i].pitjor_puntuacio = 0;
 		}
 		
 		if(argc >= 5){
@@ -145,9 +166,12 @@ int main(int argc, char* argvs[]){
 		
 		printf("\n");
 		//Find the best team and write it into millor_equip
-		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1);
+		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1, 0);
 		
 		printar_equip(millor_equip);
+		
+		pthread_mutex_destroy(&ids_sync);
+		pthread_mutex_destroy(&actives_sync);
 	}else{
 		printf("ERROR: Paràmetres incorrectes\n");
 		exit(-1);
@@ -311,7 +335,7 @@ void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti)
 
 //This is the recursive function that will calculate the best possible team, starting from the end of the market
 //until reaching the first player
-int trobar_millor_equip(struct Equip *equip, int index){
+int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 	//If index is 0, we are checking for the last player
 	//Its value doesn't matter, if we can afford it, we will have more value with him on the team than without
 	if(index == 0){
@@ -320,19 +344,33 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
 			}
 			afegir_jugador(equip, mercat.jugadors[index]);
+		}else{
+			stats[thread_slot].combinacions_no_valides++;
 		}
 		
 		//Assign an ID to this completed team
 		//We use a variable to avoid different teams having the same IDs
-		while(ids_sync == 1){
-			sleep(0.2);
-		}
-		ids_sync = 1;
+		pthread_mutex_lock(&ids_sync);
 		
 		equip -> id = id_equips;
 		id_equips++;
 		
-		ids_sync = 0;
+		pthread_mutex_unlock(&ids_sync);
+		
+		//Si l'equip està complet
+		if (equip -> jugadors.n_porters + equip -> jugadors.n_defenses + 
+				equip -> jugadors.n_centres + equip -> jugadors.n_davanters == 7){
+			stats[thread_slot].combinacions_valides++;
+			stats[thread_slot].combinacions_evaluades++;
+			stats[thread_slot].cost_total_valides += equip -> cost;
+			stats[thread_slot].puntuacio_total_valides += equip -> valor;
+			if (equip -> valor > stats[thread_slot].millor_puntuacio){
+				stats[thread_slot].millor_puntuacio = equip -> valor;
+			}else if (equip -> valor < stats[thread_slot].pitjor_puntuacio){
+				stats[thread_slot].pitjor_puntuacio = equip -> valor;
+			}
+		}
+		
 		return equip -> valor;
 	}else{
 		//If the index is not 0, we need to account for the players we haven't checked yet
@@ -348,10 +386,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			
 			//We use a variable to syncronize checking for free space for a thread, so different threads don't try to
 			//create different threads on the same space
-			while(actives_sync == 1){
-				sleep(0.2);
-			}
-			actives_sync = 1;
+			pthread_mutex_lock(&actives_sync);
 			
 			for(int i = 0; i < numero_threads; i++){
 				if(active_threads[i] == 0){
@@ -364,7 +399,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 			if(child_thread != -1){
 				active_threads[child_thread] = 1;
 			}
-			actives_sync = 0;
+			pthread_mutex_unlock(&actives_sync);
 			
 			//If we have space for a thread
 			if(child_thread != -1){
@@ -372,6 +407,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				struct ThreadArgs args;
 				args.equip = *equip;
 				args.index = index;
+				args.thread_slot = child_thread + 1;
 				
 				//Create a thread that will compute the score of having the player on our team
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
@@ -394,8 +430,10 @@ int trobar_millor_equip(struct Equip *equip, int index){
 				
 				//Recursive call; having in mind that we now have more value on our team but less budget, 
 				//what's the best team we can create with the rest of the players
-				val_agafar = trobar_millor_equip(&agafar_equip, index - 1);
+				val_agafar = trobar_millor_equip(&agafar_equip, index - 1, thread_slot);
 			}
+		}else{
+			stats[thread_slot].combinacions_no_valides++;
 		}
 		
 		//The main branch we were using will, meanwhile, calculate the best outcome without having the player on the team
@@ -409,7 +447,7 @@ int trobar_millor_equip(struct Equip *equip, int index){
 		
 		//Recursive call; having in mind that we now the same value and budget, but less players to choose from, 
 		//what's the best team we can create
-		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1);
+		val_no_agafar = trobar_millor_equip(&no_agafar_equip, index - 1, thread_slot);
 		
 		//If we used another thread to calculate the best outcome with the player
 		if(child_thread != -1){
@@ -459,6 +497,7 @@ void *trobar_millor_equip_conc(void *argvs){
 	
 	struct Equip equip = args.equip;
 	int index = args.index;
+	int thread_slot = args.thread_slot;
 	
 	struct JugadorsEquip agafar;
 	struct Equip agafar_equip;
@@ -475,7 +514,7 @@ void *trobar_millor_equip_conc(void *argvs){
 	afegir_jugador(&agafar_equip, mercat.jugadors[index]);
 	
 	//Recursive call: Find the best team that includes this player
-	trobar_millor_equip(&agafar_equip, index - 1);
+	trobar_millor_equip(&agafar_equip, index - 1, thread_slot);
 	
 	//Return the calculated team
 	struct Equip *max_equip;
