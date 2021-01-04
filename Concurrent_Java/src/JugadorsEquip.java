@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-Práctica 1.
+Práctica 2.
 Código fuente: JugadorsEquip.java
 Grau Informàtica
 48051307Y Joel Aumedes Serrano
