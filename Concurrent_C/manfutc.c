@@ -1,3 +1,4 @@
+
 /* ---------------------------------------------------------------
 Práctica 2.
 Código fuente: manfutc.c
@@ -21,6 +22,7 @@ Grau Informàtica
 #define MAX_PLAYER_NAMES 50
 #define MAX_MARKET_LINE 256
 #define MAX_TEAM_NAME 5
+#define MAX_MESSAGE_LEN 1000
 
 //F7 Lineup
 #define MAX_PORTERS 1
@@ -95,12 +97,19 @@ int numero_threads;
 int debug = 0;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
+pthread_t thread_missatges;
 struct Estadistiques stats[ASSUMED_MAX_THREADS];
 struct Estadistiques globals;
 struct Equip return_values[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
+char msgs[ASSUMED_MAX_THREADS + 1][MAX_MESSAGE_LEN];
 pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t actives_sync = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t missatges_sync = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t missatges_cond;
+char missatges[100][MAX_MESSAGE_LEN];
+volatile int numero_missatges;
+volatile int missatges_alive = 1;
 pthread_barrier_t barriers[ASSUMED_MAX_THREADS];
 sem_t semafor_globals;
 
@@ -114,6 +123,8 @@ void *trobar_millor_equip_conc(void *argvs);
 void printar_jugador(struct Jugador jugador);
 void printar_equip(struct Equip equip);
 void print_stats(int slot_index);
+void *atendre_missatges();
+void cprintf(char missatge[MAX_MESSAGE_LEN]);
 
 //Main function
 int main(int argc, char* argvs[]){
@@ -122,14 +133,21 @@ int main(int argc, char* argvs[]){
 		mercat.pressupost = atoi(argvs[1]);
 		numero_threads = atoi(argvs[3]);
 		if (numero_threads == 1){
-			printf("Passat 1 thread, serà com fer-ho sequencial.");
+			cprintf("Passat 1 thread, serà com fer-ho sequencial.");
 		}else if(numero_threads == 0){
-			printf("Passat 0 threads, es farà amb 1.");
+			cprintf("Passat 0 threads, es farà amb 1.");
 			numero_threads = 1;
 		}
 		numero_threads = numero_threads - 1;
 		
 		sem_init(&semafor_globals,0,1);
+		pthread_cond_init(&missatges_cond, NULL);
+		
+		pthread_create(&thread_missatges,NULL,atendre_missatges,NULL);
+		
+		for(int i = 0; i < 100; i++){
+			strcpy(missatges[i],"");
+		}
 		
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
@@ -158,14 +176,12 @@ int main(int argc, char* argvs[]){
 			}
 		}
 		
-		if(debug == 1){
-			printf("Nom mercat: %s\n",argvs[2]);
-		}
 		//Writing data from the passed .csv file to our global market variable
 		llegir_mercat(argvs[2]);
 		
 		if(debug == 1){
-			printf("Numero de jugadors total: %i\n", mercat.num_jugadors);
+			sprintf(msgs[0],"Numero de jugadors total: %i\n", mercat.num_jugadors);
+			cprintf(msgs[0]);
 		}
 		
 		//Creating an Equip in which we will save our final result.
@@ -179,7 +195,6 @@ int main(int argc, char* argvs[]){
 		millor_equip.jugadors.n_centres = 0;
 		millor_equip.jugadors.n_davanters = 0;
 		
-		printf("\n");
 		//Find the best team and write it into millor_equip
 		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1, 0);
 		
@@ -189,9 +204,17 @@ int main(int argc, char* argvs[]){
 			print_stats(i);
 		}
 		
+		pthread_mutex_lock(&missatges_sync);
+		missatges_alive = 0;
+		pthread_cond_signal(&missatges_cond);
+		pthread_mutex_unlock(&missatges_sync);
+		pthread_join(thread_missatges, NULL);
+		
 		sem_destroy(&semafor_globals);
 		pthread_mutex_destroy(&ids_sync);
 		pthread_mutex_destroy(&actives_sync);
+		pthread_cond_destroy(&missatges_cond);
+		
 	}else{
 		printf("ERROR: Paràmetres incorrectes\n");
 		exit(-1);
@@ -200,9 +223,11 @@ int main(int argc, char* argvs[]){
 
 //This function returns 0 if jugador can be in equip or -1 if it can't
 int jugador_apte(struct Equip equip, struct Jugador jugador){
+	char msg[MAX_MESSAGE_LEN];
 	if(jugador.preu > equip.pressupost){
 		if(debug == 1){
-			printf("NO APTE: %s és massa car\n",jugador.nom);
+			sprintf(msg,"NO APTE: %s és massa car\n",jugador.nom);
+			cprintf(msg);
 		}
 		return -1;
 	}
@@ -211,7 +236,8 @@ int jugador_apte(struct Equip equip, struct Jugador jugador){
 			return 0;
 		}else{
 			if(debug == 1){
-				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				sprintf(msg,"NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				cprintf(msg);
 			}
 			return -1;
 		}
@@ -220,7 +246,8 @@ int jugador_apte(struct Equip equip, struct Jugador jugador){
 			return 0;
 		}else{
 			if(debug == 1){
-				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				sprintf(msg,"NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				cprintf(msg);
 			}
 			return -1;
 		}
@@ -229,7 +256,8 @@ int jugador_apte(struct Equip equip, struct Jugador jugador){
 			return 0;
 		}else{
 			if(debug == 1){
-				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				sprintf(msg,"NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				cprintf(msg);
 			}
 			return -1;
 		}
@@ -238,7 +266,8 @@ int jugador_apte(struct Equip equip, struct Jugador jugador){
 			return 0;
 		}else{
 			if(debug == 1){
-				printf("NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				sprintf(msg,"NO APTE: La posició de %s ja està plena\n",jugador.nom);
+				cprintf(msg);
 			}
 			return -1;
 		}
@@ -361,7 +390,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 	if(index == 0){
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
-				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+				sprintf(msgs[thread_slot],"Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+				cprintf(msgs[thread_slot]);
 			}
 			afegir_jugador(equip, mercat.jugadors[index]);
 		}else{
@@ -417,7 +447,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		//If we can afford the player, we need to check what's better; having or not having him on the team
 		if(jugador_apte(*equip, mercat.jugadors[index]) == 0){
 			if(debug == 1){
-				printf("Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+				sprintf(msgs[thread_slot],"Jugador %s pot ser de l'equip\n",mercat.jugadors[index].nom);
+				cprintf(msgs[thread_slot]);
 			}
 			
 			//We use a variable to syncronize checking for free space for a thread, so different threads don't try to
@@ -450,7 +481,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 				//Create a thread that will compute the score of having the player on our team
 				if(pthread_create(&threads[child_thread],NULL,trobar_millor_equip_conc,(void *) &args) != 0){
 					if(debug == 1){
-						printf("ERROR: Error al crear un thread\n");
+						sprintf(msgs[thread_slot],"ERROR: Error al crear un thread\n");
+						cprintf(msgs[thread_slot]);
 						exit(-1);
 					}
 				}
@@ -500,7 +532,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			int ret;
 			//We join the created thread, which will return the best team it could create while having the player
 			if((ret = pthread_join(threads[child_thread], NULL) != 0)){
-				printf("ERROR: Error al fer un join %i\n", ret);
+				sprintf(msgs[thread_slot],"ERROR: Error al fer un join %i\n", ret);
+				cprintf(msgs[thread_slot]);
 				exit(-1);
 			}
 			
@@ -513,7 +546,8 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		//Either by creating and joining another thread
 		//Or by calculating it on the same thread
 		if(debug == 1){
-			printf("Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
+			sprintf(msgs[thread_slot],"Valor agafar: %i Valor no agafar: %i \n",val_agafar, val_no_agafar);
+			cprintf(msgs[thread_slot]);
 		}
 		
 		//We check which one of the outputs is the best, and modify equip to be it
@@ -566,7 +600,9 @@ void *trobar_millor_equip_conc(void *argvs){
 
 //Used to print a player
 void printar_jugador(struct Jugador jugador){
-	printf("- %s\n",jugador.nom);
+	char msg[MAX_MESSAGE_LEN];
+	sprintf(msg, "- %s\n",jugador.nom);
+	cprintf(msg);
 	if(jugador.posicio == PORTER){
 		//printf("Posició: Porter\n");
 	}else if(jugador.posicio == DEFENSA){
@@ -581,23 +617,29 @@ void printar_jugador(struct Jugador jugador){
 
 //Used to print a team
 void printar_equip(struct Equip equip){
-	printf("ID de l'equip: %i\nCost total: %i\nValor: %i\n",equip.id, equip.cost, equip.valor);
-	printf("\nPORTERS:\n");
+	char msg[MAX_MESSAGE_LEN];
+	sprintf(msg,"ID de l'equip: %i\nCost total: %i\nValor: %i\n",equip.id, equip.cost, equip.valor);
+	cprintf(msg);
+	sprintf(msg,"\nPORTERS:\n");
+	cprintf(msg);
 	for(int i = 0; i < equip.jugadors.n_porters;i++){
 		printar_jugador(equip.jugadors.porters[i]);
 		//printf("\n");
 	}
-	printf("\nDEFENSES:\n");
+	sprintf(msg,"\nDEFENSES:\n");
+	cprintf(msg);
 	for(int i = 0; i < equip.jugadors.n_defenses;i++){
 		printar_jugador(equip.jugadors.defenses[i]);
 		//printf("\n");
 	}
-	printf("\nCENTRES:\n");
+	sprintf(msg,"\nCENTRES:\n");
+	cprintf(msg);
 	for(int i = 0; i < equip.jugadors.n_centres;i++){
 		printar_jugador(equip.jugadors.centres[i]);
 		//printf("\n");
 	}
-	printf("\nDAVANTERS:\n");
+	sprintf(msg,"\nDAVANTERS:\n");
+	cprintf(msg);
 	for(int i = 0; i < equip.jugadors.n_davanters;i++){
 		printar_jugador(equip.jugadors.davanters[i]);
 		//printf("\n");
@@ -606,28 +648,54 @@ void printar_equip(struct Equip equip){
 
 void print_stats(int slot_index){
 	if (slot_index < 0){
-		printf("============= Parcials Globals =============\n");
-		printf("Valides totals: %i No valides totals %i Totals %i\n",
+		sprintf(msgs[slot_index],"============= Parcials Globals =============\nValides totals: %i No valides totals %i Totals %i\nMillor puntuació %i Pitjor puntuació %i\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
 			globals.combinacions_valides,
 			globals.combinacions_no_valides,
-			globals.combinacions_evaluades);
-		printf("Millor puntuació %i Pitjor puntuació %i\n",
+			globals.combinacions_evaluades,
 			globals.millor_puntuacio,
-			globals.pitjor_puntuacio);
-		printf("Cost mitjà: %.2f Puntuació mitjana: %.2f\n", (float) globals.cost_total_valides / (float) globals.combinacions_valides,
-		(float) globals.puntuacio_total_valides / (float) globals.combinacions_valides);
-		printf("-------------------------------------------\n");
+			globals.pitjor_puntuacio,
+			(float) globals.cost_total_valides / (float) globals.combinacions_valides,
+			(float) globals.puntuacio_total_valides / (float) globals.combinacions_valides);
+		cprintf(msgs[slot_index]);
 	}else{
-		printf("============= Parcials Slot %i =============\n",slot_index);
-		printf("Valides totals: %i No valides totals %i Totals %i\n",
+		sprintf(msgs[slot_index],"============= Parcials Slot %i =============\nValides totals: %i No valides totals %i Totals %i\nMillor puntuació %i Pitjor puntuació %i\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
+			slot_index,
 			stats[slot_index].combinacions_valides,
 			stats[slot_index].combinacions_no_valides,
-			stats[slot_index].combinacions_evaluades);
-		printf("Millor puntuació %i Pitjor puntuació %i\n",
+			stats[slot_index].combinacions_evaluades,
 			stats[slot_index].millor_puntuacio,
-			stats[slot_index].pitjor_puntuacio);
-		printf("Cost mitjà: %.2f Puntuació mitjana: %.2f\n", (float) stats[slot_index].cost_total_valides / (float) stats[slot_index].combinacions_valides,
-		(float) stats[slot_index].puntuacio_total_valides / (float) stats[slot_index].combinacions_valides);
-		printf("-------------------------------------------\n");
+			stats[slot_index].pitjor_puntuacio,
+			(float) stats[slot_index].cost_total_valides / (float) stats[slot_index].combinacions_valides,
+			(float) stats[slot_index].puntuacio_total_valides / (float) stats[slot_index].combinacions_valides);
+		cprintf(msgs[slot_index]);
 	}
+}
+
+void *atendre_missatges(){
+	while(missatges_alive == 1){
+		pthread_mutex_lock(&missatges_sync);
+		while(missatges_alive == 1 && numero_missatges < 100){
+			pthread_cond_wait(&missatges_cond, &missatges_sync);
+		}
+		for(int i = 0; i < 100; i++){
+			if(strcmp(missatges[i], "") != 0){
+				printf("%s",missatges[i]);
+				strcpy(missatges[i],"");
+			}
+		}
+		numero_missatges = 0;
+		pthread_mutex_unlock(&missatges_sync);
+	}
+	return NULL;
+}
+
+void cprintf(char missatge[]){
+	while(numero_missatges >= 100);
+	pthread_mutex_lock(&missatges_sync);
+	if(numero_missatges < 100){
+		strcpy(missatges[numero_missatges], missatge);
+		numero_missatges++;
+	}
+	pthread_cond_signal(&missatges_cond);
+	pthread_mutex_unlock(&missatges_sync);
 }
