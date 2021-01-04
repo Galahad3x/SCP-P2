@@ -1,10 +1,10 @@
 # SCP-P2
 ## Coses a fer
  + Sincronitzacions  
- ++ Semafors: A les globals, el farem servir de mutex  
- ++ Mutex: Thread missatges  
+ ++ ~Semafors: A les globals, el farem servir de mutex~  
+ ++ ~Mutex: Thread missatges~  
  ++ ~Barreres: Al acabar cada thread~  
- ++ Variables de condició: Thread missatges
+ ++ ~Variables de condició: Thread missatges~
  + Evitar las condiciones de carrera  
 Implementar sincronització que sigui per a que sigui determinista
  + Thread de missatges  
