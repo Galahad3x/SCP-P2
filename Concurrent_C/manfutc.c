@@ -13,6 +13,7 @@ Grau Informàtica
 #include <unistd.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 //Non-modified variables used to create fixed-size arrays
 #define ASSUMED_MAX_THREADS 10
@@ -95,11 +96,13 @@ int debug = 0;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
 struct Estadistiques stats[ASSUMED_MAX_THREADS];
+struct Estadistiques globals;
 struct Equip return_values[ASSUMED_MAX_THREADS];
 volatile int active_threads[ASSUMED_MAX_THREADS];
 pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t actives_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_barrier_t barriers[ASSUMED_MAX_THREADS];
+sem_t semafor_globals;
 
 //Function headers
 int jugador_apte(struct Equip equip, struct Jugador jugador);
@@ -126,6 +129,7 @@ int main(int argc, char* argvs[]){
 		}
 		numero_threads = numero_threads - 1;
 		
+		sem_init(&semafor_globals,0,1);
 		
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
@@ -139,6 +143,14 @@ int main(int argc, char* argvs[]){
 			stats[i].millor_puntuacio = 0;
 			stats[i].pitjor_puntuacio = 999999;
 		}
+		
+		globals.combinacions_valides = 0;
+		globals.combinacions_evaluades = 0;
+		globals.combinacions_no_valides = 0;
+		globals.cost_total_valides = 0;
+		globals.puntuacio_total_valides = 0;
+		globals.millor_puntuacio = 0;
+		globals.pitjor_puntuacio = 999999;
 		
 		if(argc >= 5){
 			if(strcmp("-d",argvs[4]) == 0){
@@ -173,10 +185,11 @@ int main(int argc, char* argvs[]){
 		
 		printar_equip(millor_equip);
 		
-		for(int i = 0; i < numero_threads + 1; i++){
+		for(int i = -1; i < numero_threads + 1; i++){
 			print_stats(i);
 		}
 		
+		sem_destroy(&semafor_globals);
 		pthread_mutex_destroy(&ids_sync);
 		pthread_mutex_destroy(&actives_sync);
 	}else{
@@ -354,6 +367,10 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
 			stats[thread_slot].combinacions_evaluades++;
+			sem_wait(&semafor_globals);
+			globals.combinacions_no_valides++;
+			globals.combinacions_evaluades++;
+			sem_post(&semafor_globals);
 		}
 		
 		//Assign an ID to this completed team
@@ -368,6 +385,17 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		//Si l'equip està complet
 		if (equip -> jugadors.n_porters + equip -> jugadors.n_defenses + 
 				equip -> jugadors.n_centres + equip -> jugadors.n_davanters == 7){
+			sem_wait(&semafor_globals);
+			globals.combinacions_valides++;
+			globals.combinacions_evaluades++;
+			globals.cost_total_valides += equip -> cost;
+			globals.puntuacio_total_valides += equip -> valor;
+			if (equip -> valor > globals.millor_puntuacio){
+				globals.millor_puntuacio = equip -> valor;
+			}else if (equip -> valor < globals.pitjor_puntuacio){
+				globals.pitjor_puntuacio = equip -> valor;
+			}
+			sem_post(&semafor_globals);
 			stats[thread_slot].combinacions_valides++;
 			stats[thread_slot].combinacions_evaluades++;
 			stats[thread_slot].cost_total_valides += equip -> cost;
@@ -445,6 +473,10 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
 			stats[thread_slot].combinacions_evaluades++;
+			sem_wait(&semafor_globals);
+			globals.combinacions_no_valides++;
+			globals.combinacions_evaluades++;
+			sem_post(&semafor_globals);
 		}
 		
 		//The main branch we were using will, meanwhile, calculate the best outcome without having the player on the team
@@ -534,7 +566,7 @@ void *trobar_millor_equip_conc(void *argvs){
 
 //Used to print a player
 void printar_jugador(struct Jugador jugador){
-	printf("Nom: %s\n",jugador.nom);
+	printf("- %s\n",jugador.nom);
 	if(jugador.posicio == PORTER){
 		//printf("Posició: Porter\n");
 	}else if(jugador.posicio == DEFENSA){
@@ -573,12 +605,29 @@ void printar_equip(struct Equip equip){
 }
 
 void print_stats(int slot_index){
-	printf("============= Parcials Slot %i =============\n",slot_index);
-	printf("Valides totals: %i No valides totals %i Totals %i\n",
-		stats[slot_index].combinacions_valides,
-		stats[slot_index].combinacions_no_valides,
-		stats[slot_index].combinacions_evaluades);
-	printf("Millor puntuació %i Pitjor puntuació %i\n",
-		stats[slot_index].millor_puntuacio,
-		stats[slot_index].pitjor_puntuacio);
+	if (slot_index < 0){
+		printf("============= Parcials Globals =============\n");
+		printf("Valides totals: %i No valides totals %i Totals %i\n",
+			globals.combinacions_valides,
+			globals.combinacions_no_valides,
+			globals.combinacions_evaluades);
+		printf("Millor puntuació %i Pitjor puntuació %i\n",
+			globals.millor_puntuacio,
+			globals.pitjor_puntuacio);
+		printf("Cost mitjà: %.2f Puntuació mitjana: %.2f\n", (float) globals.cost_total_valides / (float) globals.combinacions_valides,
+		(float) globals.puntuacio_total_valides / (float) globals.combinacions_valides);
+		printf("-------------------------------------------\n");
+	}else{
+		printf("============= Parcials Slot %i =============\n",slot_index);
+		printf("Valides totals: %i No valides totals %i Totals %i\n",
+			stats[slot_index].combinacions_valides,
+			stats[slot_index].combinacions_no_valides,
+			stats[slot_index].combinacions_evaluades);
+		printf("Millor puntuació %i Pitjor puntuació %i\n",
+			stats[slot_index].millor_puntuacio,
+			stats[slot_index].pitjor_puntuacio);
+		printf("Cost mitjà: %.2f Puntuació mitjana: %.2f\n", (float) stats[slot_index].cost_total_valides / (float) stats[slot_index].combinacions_valides,
+		(float) stats[slot_index].puntuacio_total_valides / (float) stats[slot_index].combinacions_valides);
+		printf("-------------------------------------------\n");
+	}
 }
