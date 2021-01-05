@@ -109,9 +109,13 @@ public class Manfutc {
         addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
         for (int i = -1; i < n_threads; i++) {
-            printStats(i);
+            //printStats(i);
         }
         message_thread.missatge_alive = 0;
+        synchronized (lock) {
+            lock.notify();
+        }
+        message_thread.join();
     }
 
     // Reads the file entered by parameter
@@ -342,6 +346,9 @@ public class Manfutc {
                         }
                     }
                     for (int i = 0; i < 100; i++) {
+                        if (message_list.isEmpty()) {
+                            break;
+                        }
                         String element = message_list.remove();
                         if (element != null) {
                                 System.out.println(element);
