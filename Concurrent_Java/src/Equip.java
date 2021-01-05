@@ -61,32 +61,32 @@ public class Equip {
 
     // Prints the parameters of the team
     public void printTeam() {
-        System.out.println("ID de l'equip: " + this.id);
-        System.out.println("Valor de l'equip: " + this.valor);
-        System.out.println("Cost de l'equip: " + this.cost);
-        System.out.println("Jugadors de l'equip òpim: ");
-        System.out.println("Porters: ");
+        Manfutc.addMessage("ID de l'equip: " + this.id);
+        Manfutc.addMessage("Valor de l'equip: " + this.valor);
+        Manfutc.addMessage("Cost de l'equip: " + this.cost);
+        Manfutc.addMessage("Jugadors de l'equip òpim: ");
+        Manfutc.addMessage("Porters: ");
         for (Jugador porter : jugadorsEquip.porters) {
             if (porter != null) {
-                System.out.println("   - " + porter.nom);
+                Manfutc.addMessage("   - " + porter.nom);
             }
         }
-        System.out.println("Defenses: ");
+        Manfutc.addMessage("Defenses: ");
         for (Jugador defensa : jugadorsEquip.defenses) {
             if (defensa != null) {
-                System.out.println("   - " + defensa.nom);
+                Manfutc.addMessage("   - " + defensa.nom);
             }
         }
-        System.out.println("Migcampistes: ");
+        Manfutc.addMessage("Migcampistes: ");
         for (Jugador migcampista : jugadorsEquip.migcampistes) {
             if (migcampista != null) {
-                System.out.println("   - " + migcampista.nom);
+                Manfutc.addMessage("   - " + migcampista.nom);
             }
         }
-        System.out.println("Davanters: ");
+        Manfutc.addMessage("Davanters: ");
         for (Jugador davanter : jugadorsEquip.davanters) {
             if (davanter != null) {
-                System.out.println("   - " + davanter.nom);
+                Manfutc.addMessage("   - " + davanter.nom);
             }
         }
     }

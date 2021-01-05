@@ -24,8 +24,8 @@ public class Estadistiques {
     public void inc_pitjor_puntuacio(int valor) { pitjor_puntuacio = valor; }
 
     public void printStats() {
-        System.out.println("Vàlides totals: " + combinacions_valides + " No vàlides totals: " + combinacions_no_valides + " Totals: " + combinacions_evaluades);
-        System.out.println("Millor puntuació: " + millor_puntuacio + " Pitjor puntuació: " + pitjor_puntuacio);
-        System.out.println("Cost mitjà: " + (cost_total_valides / combinacions_valides) + " Puntuació mitjana: " + (puntuacio_total_valides / combinacions_valides));
+        Manfutc.addMessage("Vàlides totals: " + combinacions_valides + " No vàlides totals: " + combinacions_no_valides + " Totals: " + combinacions_evaluades);
+        Manfutc.addMessage("Millor puntuació: " + millor_puntuacio + " Pitjor puntuació: " + pitjor_puntuacio);
+        Manfutc.addMessage("Cost mitjà: " + (cost_total_valides / combinacions_valides) + " Puntuació mitjana: " + (puntuacio_total_valides / combinacions_valides));
     }
 }

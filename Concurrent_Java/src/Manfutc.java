@@ -7,12 +7,15 @@ Grau Informàtica
 ---------------------------------------------------------------*/
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
 public class Manfutc {
 
     public static int id_equips = 0;
     public static int n_threads;
+    public static int M;
 
     public static Mercat mercat;
 
@@ -27,19 +30,27 @@ public class Manfutc {
 
     public static Semaphore semafor;
 
-    //TODO Semaphore
+    public static Queue<String> message_list = new LinkedList<>();
 
     // Main function
     public static void main(String[] argvs) throws InterruptedException {
-        if (argvs.length != 3) {
-            throw new IllegalArgumentException("Error while introducing the arguments: <pressupost>, <nom_mercat>, <n_threads>.");
+
+        MessageThreads message_thread = new MessageThreads();
+        message_thread.missatge_alive = 1;
+        message_thread.setDaemon(true);
+        message_thread.start();
+
+        if (argvs.length != 4) {
+            throw new IllegalArgumentException("Error while introducing the arguments: <pressupost>, <nom_mercat>, <n_threads>, <M>.");
         }
+
         int pressupost = Integer.parseInt(argvs[0]);
+
         n_threads = Integer.parseInt(argvs[2]);
-        if(n_threads == 1){
-            System.out.println("Passat 1 thread, serà com fer-ho seqüencial.");
-        }else if(n_threads == 0){
-            System.out.println("Passats 0 threads, es farà amb 1.");
+        if (n_threads == 1) {
+            System.out.println("S'ha passat 1 thread, serà com fer-ho de forma seqüencial.");
+        } else if (n_threads == 0) {
+            System.out.println("S'ha passat 0 threads, es farà amb 1.");
             n_threads = 1;
         }
         n_threads -= 1;
@@ -86,20 +97,21 @@ public class Manfutc {
 
         // Reads the file (mercatXj.csv)
         try {
-            System.out.println("----------\nLlegint el fitxer: " + argvs[1]);
-            // System.out.println("----------\nLlista de jugadors del mercat:");
+
+            addMessage("----------\nLlegint el fitxer: " + argvs[1]);
             mercat = LlegirFitxerJugadors(argvs[1]);
         } catch (Exception e) {
-            System.out.println("ERROR: Error reading the file.");
+            addMessage("ERROR: Error reading the file.");
         }
         // Calculates the best team
-        System.out.println("----------\nCalculant l'equip òptim...");
+        addMessage("----------\nCalculant l'equip òptim...");
         equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1, 0);
-        System.out.println("---------- MILLOR EQUIP OBTINGUT ----------");
+        addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
         for (int i = -1; i < n_threads; i++) {
             printStats(i);
         }
+        message_thread.missatge_alive = 0;
     }
 
     // Reads the file entered by parameter
@@ -111,7 +123,7 @@ public class Manfutc {
             fis = new FileInputStream(fitxer);
 
         } catch (FileNotFoundException e) {
-            System.err.println("ERROR: File not found.");
+            addMessage("ERROR: File not found.");
         }
 
         try {
@@ -144,6 +156,7 @@ public class Manfutc {
                 } else {
                     jugador.setPosicio(TJugador.Davanter);
                 }
+
                 // Sets the player's price
                 jugador.setPreu(Integer.parseInt(field[3]));
 
@@ -156,11 +169,10 @@ public class Manfutc {
                 // Adds the readed player into the market
                 mercat.jugadors[mercat.NJugadors] = jugador;
                 mercat.NJugadors++;
-                // System.out.println(jugador.printPlayer());
             }
             br.close();
         } catch (IOException e) {
-            System.err.println("ERROR: Error doing I/O.");
+            addMessage("ERROR: Error doing I/O.");
         }
         return mercat;
     }
@@ -240,7 +252,6 @@ public class Manfutc {
                     agafar_equip.cost = equip.cost + (mercat.getJugador(index).preu);
                     agafar_equip.pressupost = equip.pressupost - (mercat.getJugador(index).preu);
                     agafar_equip.jugadorsEquip.addPlayer(mercat.getJugador(index));
-                    // CalcularEquipOptim modifies agafar_equip
                     val_agafar = calcularEquipOptim(agafar_equip, index - 1, thread_slot).valor;
                 }
             } else {
@@ -316,12 +327,46 @@ public class Manfutc {
         }
     }
 
+    public static class MessageThreads extends Thread{
+        int missatge_alive;
+
+        @Override
+        public void run() {
+            while (missatge_alive == 1) {
+                synchronized (lock) {
+                    while (missatge_alive == 1 && message_list.size() < 100) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    for (int i = 0; i < 100; i++) {
+                        String element = message_list.remove();
+                        if (element != null) {
+                                System.out.println(element);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void addMessage(String message) {
+        synchronized (lock) {
+            message_list.add(message);
+            lock.notify();
+        }
+    }
+
     public static void printStats(int thread_slot) {
         if (thread_slot < 0) {
-            System.out.println("---------- Parcials globals ----------");
+            addMessage("---------- Parcials globals ----------");
             stats.printStats();
         } else {
-            System.out.println("---------- Parcial del slot: " + thread_slot + "----------");
+            addMessage("---------- Parcial del slot: " + thread_slot + "----------");
             stats_arr[thread_slot].printStats();
         }
         System.out.println("--------------------");
