@@ -98,35 +98,44 @@ int numero_threads;
 int debug = 0;
 int m = 25000;
 volatile int id_equips;
+
 pthread_t threads[ASSUMED_MAX_THREADS];
 pthread_t thread_missatges;
+
+volatile int active_threads[ASSUMED_MAX_THREADS];
+struct Equip return_values[ASSUMED_MAX_THREADS];
 struct Estadistiques stats[ASSUMED_MAX_THREADS];
 struct Estadistiques globals;
-struct Equip return_values[ASSUMED_MAX_THREADS];
-volatile int active_threads[ASSUMED_MAX_THREADS];
+
 char msgs[ASSUMED_MAX_THREADS + 1][MAX_MESSAGE_LEN];
+char missatges[100][MAX_MESSAGE_LEN];
+volatile int numero_missatges;
+volatile int missatges_alive = 1;
+
 pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t actives_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t missatges_sync = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t missatges_cond;
-char missatges[100][MAX_MESSAGE_LEN];
-volatile int numero_missatges;
-volatile int missatges_alive = 1;
 pthread_barrier_t barriers[ASSUMED_MAX_THREADS];
 sem_t semafor_globals;
 
 //Function headers
+void llegir_mercat(char *pathJugadors);
+
 int jugador_apte(struct Equip equip, struct Jugador jugador);
 void afegir_jugador(struct Equip *equip, struct Jugador jugador);
-void llegir_mercat(char *pathJugadors);
+
 void deepcopy_jugadors(struct JugadorsEquip origen, struct JugadorsEquip *desti);
+
 int trobar_millor_equip(struct Equip *equip, int index, int thread_slot);
 void *trobar_millor_equip_conc(void *argvs);
+
+void *atendre_missatges();
+void cprintf(char missatge[MAX_MESSAGE_LEN]);
+
 void printar_jugador(struct Jugador jugador);
 void printar_equip(struct Equip equip);
 void print_stats(int slot_index);
-void *atendre_missatges();
-void cprintf(char missatge[MAX_MESSAGE_LEN]);
 int necessary_print();
 void print_all_stats();
 
@@ -228,6 +237,74 @@ int main(int argc, char* argvs[]){
 	}
 }
 
+//This function reads the .csv file and writes the players' information into our global variable mercat
+void llegir_mercat(char *pathJugadors){
+	char buffer[256];
+	int fdin;
+	int nofi;
+	
+	int ln = 0;
+	
+	fdin=open(pathJugadors, O_RDONLY);
+	
+	do {
+		int x=0,i,f;
+
+		while((nofi=read(fdin,&buffer[x],1))!=0 && buffer[x++]!='\n');
+		buffer[x]='\0';
+		
+		if (buffer[0]=='#') continue;
+		
+		i=0;
+		for (f=0;buffer[f]!=';';f++);
+		buffer[f]=0;
+		mercat.jugadors[ln].id = atoi(&(buffer[i]));
+
+		i=++f;
+		for (;buffer[f]!=';';f++);
+		buffer[f]=0;
+		strcpy(mercat.jugadors[ln].nom,&(buffer[i]));
+
+		i=++f;
+		for (;buffer[f]!=';';f++);
+		buffer[f]=0;
+		if (strcmp(&(buffer[i]),"Portero")==0){
+			mercat.jugadors[ln].posicio=PORTER;
+		}
+		else if (strcmp(&(buffer[i]),"Defensa")==0){
+			mercat.jugadors[ln].posicio=DEFENSA;
+		}
+		else if (strcmp(&(buffer[i]),"Medio")==0){
+			mercat.jugadors[ln].posicio=CENTRE;
+		}
+		else if (strcmp(&(buffer[i]),"Delantero")==0){
+			mercat.jugadors[ln].posicio=DAVANTER;
+		}
+		
+		i=++f;
+		for (f=0;buffer[f]!=';';f++);
+		buffer[f]=0;
+		mercat.jugadors[ln].preu = atoi(&(buffer[i]));
+		
+		i=++f;
+		for (f=0;buffer[f]!=';';f++);
+		buffer[f]=0;
+		strcpy(mercat.jugadors[ln].nom_equip,&(buffer[i]));
+
+		i=++f;
+		for (f=0;buffer[f]!='\n';f++);
+		buffer[f]=0;
+		mercat.jugadors[ln].valor = atoi(&(buffer[i]));
+		
+		ln++;
+	}
+	while(nofi);
+	
+	mercat.num_jugadors = ln;
+	
+	close(fdin);
+}
+
 //This function returns 0 if jugador can be in equip or -1 if it can't
 int jugador_apte(struct Equip equip, struct Jugador jugador){
 	char msg[MAX_MESSAGE_LEN];
@@ -299,74 +376,6 @@ void afegir_jugador(struct Equip *equip, struct Jugador jugador){
 		equip -> jugadors.davanters[equip -> jugadors.n_davanters] = jugador;
 		equip -> jugadors.n_davanters++;
 	}
-}
-
-//This function reads the .csv file and writes the players' information into our global variable mercat
-void llegir_mercat(char *pathJugadors){
-	char buffer[256];
-	int fdin;
-	int nofi;
-	
-	int ln = 0;
-	
-	fdin=open(pathJugadors, O_RDONLY);
-	
-	do {
-		int x=0,i,f;
-
-		while((nofi=read(fdin,&buffer[x],1))!=0 && buffer[x++]!='\n');
-		buffer[x]='\0';
-		
-		if (buffer[0]=='#') continue;
-		
-		i=0;
-		for (f=0;buffer[f]!=';';f++);
-		buffer[f]=0;
-		mercat.jugadors[ln].id = atoi(&(buffer[i]));
-
-		i=++f;
-		for (;buffer[f]!=';';f++);
-		buffer[f]=0;
-		strcpy(mercat.jugadors[ln].nom,&(buffer[i]));
-
-		i=++f;
-		for (;buffer[f]!=';';f++);
-		buffer[f]=0;
-		if (strcmp(&(buffer[i]),"Portero")==0){
-			mercat.jugadors[ln].posicio=PORTER;
-		}
-		else if (strcmp(&(buffer[i]),"Defensa")==0){
-			mercat.jugadors[ln].posicio=DEFENSA;
-		}
-		else if (strcmp(&(buffer[i]),"Medio")==0){
-			mercat.jugadors[ln].posicio=CENTRE;
-		}
-		else if (strcmp(&(buffer[i]),"Delantero")==0){
-			mercat.jugadors[ln].posicio=DAVANTER;
-		}
-		
-		i=++f;
-		for (f=0;buffer[f]!=';';f++);
-		buffer[f]=0;
-		mercat.jugadors[ln].preu = atoi(&(buffer[i]));
-		
-		i=++f;
-		for (f=0;buffer[f]!=';';f++);
-		buffer[f]=0;
-		strcpy(mercat.jugadors[ln].nom_equip,&(buffer[i]));
-
-		i=++f;
-		for (f=0;buffer[f]!='\n';f++);
-		buffer[f]=0;
-		mercat.jugadors[ln].valor = atoi(&(buffer[i]));
-		
-		ln++;
-	}
-	while(nofi);
-	
-	mercat.num_jugadors = ln;
-	
-	close(fdin);
 }
 
 //This function creates a deep copy of a JugadorsEquip object to be assigned later to a different team
@@ -591,22 +600,6 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 	}
 }
 
-int necessary_print(){
-	for(int t = 0; t < numero_threads + 1; t++){
-		if (stats[t].etapa < 1){
-			return 1;
-		}
-	}
-	return 0;
-}
-
-void print_all_stats(){
-	for(int i = -1; i < numero_threads + 1; i++){
-		print_stats(i);
-		stats[i].etapa--;
-	}
-}
-
 //This is the function that we will call when creating a new thread
 void *trobar_millor_equip_conc(void *argvs){
 	//Read the parameters
@@ -637,6 +630,37 @@ void *trobar_millor_equip_conc(void *argvs){
 	return_values[thread_slot] = agafar_equip;
 	pthread_barrier_wait(&barriers[thread_slot]);
 	return NULL;
+}
+
+//This is the function that we will call with the messages thread
+void *atendre_missatges(){
+	while(missatges_alive == 1){
+		pthread_mutex_lock(&missatges_sync);
+		while(missatges_alive == 1 && numero_missatges < 100){
+			pthread_cond_wait(&missatges_cond, &missatges_sync);
+		}
+		for(int i = 0; i < 100; i++){
+			if(strcmp(missatges[i], "") != 0){
+				printf("%s",missatges[i]);
+				strcpy(missatges[i],"");
+			}
+		}
+		numero_missatges = 0;
+		pthread_mutex_unlock(&missatges_sync);
+	}
+	return NULL;
+}
+
+//Function to simplify adding a message to the queue
+void cprintf(char missatge[]){
+	while(numero_missatges >= 100);
+	pthread_mutex_lock(&missatges_sync);
+	if(numero_missatges < 100){
+		strcpy(missatges[numero_missatges], missatge);
+		numero_missatges++;
+	}
+	pthread_cond_signal(&missatges_cond);
+	pthread_mutex_unlock(&missatges_sync);
 }
 
 //Used to print a player
@@ -687,6 +711,7 @@ void printar_equip(struct Equip equip){
 	}
 }
 
+//Used to print stats
 void print_stats(int slot_index){
 	if (slot_index < 0){
 		sprintf(msgs[slot_index],"============= Parcials Globals =============\nValides totals: %i No valides totals %i Totals %i\nMillor puntuació %i Pitjor puntuació %i\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
@@ -712,31 +737,20 @@ void print_stats(int slot_index){
 	}
 }
 
-void *atendre_missatges(){
-	while(missatges_alive == 1){
-		pthread_mutex_lock(&missatges_sync);
-		while(missatges_alive == 1 && numero_missatges < 100){
-			pthread_cond_wait(&missatges_cond, &missatges_sync);
-		}
-		for(int i = 0; i < 100; i++){
-			if(strcmp(missatges[i], "") != 0){
-				printf("%s",missatges[i]);
-				strcpy(missatges[i],"");
-			}
-		}
-		numero_missatges = 0;
-		pthread_mutex_unlock(&missatges_sync);
+//Loop to print all stats, including global ones
+void print_all_stats(){
+	for(int i = -1; i < numero_threads + 1; i++){
+		print_stats(i);
+		stats[i].etapa--;
 	}
-	return NULL;
 }
 
-void cprintf(char missatge[]){
-	while(numero_missatges >= 100);
-	pthread_mutex_lock(&missatges_sync);
-	if(numero_missatges < 100){
-		strcpy(missatges[numero_missatges], missatge);
-		numero_missatges++;
+//Loop to check if we must print global stats
+int necessary_print(){
+	for(int t = 0; t < numero_threads + 1; t++){
+		if (stats[t].etapa < 1){
+			return 1;
+		}
 	}
-	pthread_cond_signal(&missatges_cond);
-	pthread_mutex_unlock(&missatges_sync);
+	return 0;
 }
