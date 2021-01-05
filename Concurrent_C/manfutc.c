@@ -22,7 +22,7 @@ Grau Informàtica
 #define MAX_PLAYER_NAMES 50
 #define MAX_MARKET_LINE 256
 #define MAX_TEAM_NAME 5
-#define MAX_MESSAGE_LEN 1000
+#define MAX_MESSAGE_LEN 500
 
 //F7 Lineup
 #define MAX_PORTERS 1
@@ -89,12 +89,14 @@ struct Estadistiques {
 	int puntuacio_total_valides;
 	int millor_puntuacio;
 	int pitjor_puntuacio;
+	int etapa;
 };
 
 //Global variable declarations
 struct Mercat mercat;
 int numero_threads;
 int debug = 0;
+int m = 25000;
 volatile int id_equips;
 pthread_t threads[ASSUMED_MAX_THREADS];
 pthread_t thread_missatges;
@@ -125,6 +127,8 @@ void printar_equip(struct Equip equip);
 void print_stats(int slot_index);
 void *atendre_missatges();
 void cprintf(char missatge[MAX_MESSAGE_LEN]);
+int necessary_print();
+void print_all_stats();
 
 //Main function
 int main(int argc, char* argvs[]){
@@ -132,6 +136,18 @@ int main(int argc, char* argvs[]){
 		//Reading the passed parameters
 		mercat.pressupost = atoi(argvs[1]);
 		numero_threads = atoi(argvs[3]);
+		if (argc >= 5){
+			if(strcmp("-d",argvs[4]) == 0){
+				debug = 1;
+			}else{
+				m = atoi(argvs[4]);
+			}
+		}
+		if(argc >= 6){
+			if(strcmp("-d",argvs[5]) == 0){
+				debug = 1;
+			}
+		}
 		if (numero_threads == 1){
 			cprintf("Passat 1 thread, serà com fer-ho sequencial.");
 		}else if(numero_threads == 0){
@@ -170,11 +186,6 @@ int main(int argc, char* argvs[]){
 		globals.millor_puntuacio = 0;
 		globals.pitjor_puntuacio = 999999;
 		
-		if(argc >= 5){
-			if(strcmp("-d",argvs[4]) == 0){
-				debug = 1;
-			}
-		}
 		
 		//Writing data from the passed .csv file to our global market variable
 		llegir_mercat(argvs[2]);
@@ -199,10 +210,6 @@ int main(int argc, char* argvs[]){
 		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1, 0);
 		
 		printar_equip(millor_equip);
-		
-		for(int i = -1; i < numero_threads + 1; i++){
-			print_stats(i);
-		}
 		
 		pthread_mutex_lock(&missatges_sync);
 		missatges_alive = 0;
@@ -397,9 +404,15 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
 			stats[thread_slot].combinacions_evaluades++;
+			if(stats[thread_slot].combinacions_evaluades % m == 0){
+				stats[thread_slot].etapa++;
+			}
 			sem_wait(&semafor_globals);
 			globals.combinacions_no_valides++;
 			globals.combinacions_evaluades++;
+			if(necessary_print() == 0){
+				print_all_stats();
+			}
 			sem_post(&semafor_globals);
 		}
 		
@@ -418,6 +431,9 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			sem_wait(&semafor_globals);
 			globals.combinacions_valides++;
 			globals.combinacions_evaluades++;
+			if(necessary_print() == 0){
+				print_all_stats();
+			}
 			globals.cost_total_valides += equip -> cost;
 			globals.puntuacio_total_valides += equip -> valor;
 			if (equip -> valor > globals.millor_puntuacio){
@@ -428,6 +444,9 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			sem_post(&semafor_globals);
 			stats[thread_slot].combinacions_valides++;
 			stats[thread_slot].combinacions_evaluades++;
+			if(stats[thread_slot].combinacions_evaluades % m == 0){
+				stats[thread_slot].etapa++;
+			}
 			stats[thread_slot].cost_total_valides += equip -> cost;
 			stats[thread_slot].puntuacio_total_valides += equip -> valor;
 			if (equip -> valor > stats[thread_slot].millor_puntuacio){
@@ -505,9 +524,15 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 		}else{
 			stats[thread_slot].combinacions_no_valides++;
 			stats[thread_slot].combinacions_evaluades++;
+			if(stats[thread_slot].combinacions_evaluades % m == 0){
+				stats[thread_slot].etapa++;
+			}
 			sem_wait(&semafor_globals);
 			globals.combinacions_no_valides++;
 			globals.combinacions_evaluades++;
+			if(necessary_print() == 0){
+				print_all_stats();
+			}
 			sem_post(&semafor_globals);
 		}
 		
@@ -563,6 +588,22 @@ int trobar_millor_equip(struct Equip *equip, int index, int thread_slot){
 			equip -> jugadors = agafar_equip.jugadors;
 		}
 		return equip -> valor;
+	}
+}
+
+int necessary_print(){
+	for(int t = 0; t < numero_threads + 1; t++){
+		if (stats[t].etapa < 1){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void print_all_stats(){
+	for(int i = -1; i < numero_threads + 1; i++){
+		print_stats(i);
+		stats[i].etapa--;
 	}
 }
 
