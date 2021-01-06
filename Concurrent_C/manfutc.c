@@ -185,6 +185,7 @@ int main(int argc, char* argvs[]){
 			stats[i].puntuacio_total_valides = 0;
 			stats[i].millor_puntuacio = 0;
 			stats[i].pitjor_puntuacio = 999999;
+			stats[i].etapa = 0;
 		}
 		
 		globals.combinacions_valides = 0;
@@ -194,6 +195,7 @@ int main(int argc, char* argvs[]){
 		globals.puntuacio_total_valides = 0;
 		globals.millor_puntuacio = 0;
 		globals.pitjor_puntuacio = 999999;
+		globals.etapa = 0;
 		
 		
 		//Writing data from the passed .csv file to our global market variable
@@ -743,6 +745,7 @@ void print_all_stats(){
 		print_stats(i);
 		stats[i].etapa--;
 	}
+	globals.etapa++;
 }
 
 //Loop to check if we must print global stats
