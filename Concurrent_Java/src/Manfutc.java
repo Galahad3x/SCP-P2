@@ -48,9 +48,9 @@ public class Manfutc {
 
         n_threads = Integer.parseInt(argvs[2]);
         if (n_threads == 1) {
-            System.out.println("S'ha passat 1 thread, serà com fer-ho de forma seqüencial.");
+            addMessage("S'ha passat 1 thread, serà com fer-ho de forma seqüencial.");
         } else if (n_threads == 0) {
-            System.out.println("S'ha passat 0 threads, es farà amb 1.");
+            addMessage("S'ha passat 0 threads, es farà amb 1.");
             n_threads = 1;
         }
         n_threads -= 1;
@@ -108,9 +108,6 @@ public class Manfutc {
         equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1, 0);
         addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
-        for (int i = -1; i < n_threads; i++) {
-            //printStats(i);
-        }
         message_thread.missatge_alive = 0;
         synchronized (lock) {
             lock.notify();
@@ -194,9 +191,15 @@ public class Manfutc {
             } else {
                 stats_arr[thread_slot].inc_combinacions_no_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+                if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
+                    stats_arr[thread_slot].inc_etapa();
+                }
                 semafor.acquire();
                 stats.inc_combinacions_no_valides();
                 stats.inc_combinacions_evaluades();
+                if (needToPrint()) {
+                    printAllStates();
+                }
                 semafor.release();
             }
             if (equip.jugadorsEquip.numPorters + equip.jugadorsEquip.numDefenses + equip.jugadorsEquip.numMigcampistes + equip.jugadorsEquip.numDavanters == 7) {
@@ -210,9 +213,15 @@ public class Manfutc {
                 } else if (equip.valor < stats.pitjor_puntuacio) {
                     stats.inc_pitjor_puntuacio(equip.valor);
                 }
+                if (needToPrint()) {
+                    printAllStates();
+                }
                 semafor.release();
                 stats_arr[thread_slot].inc_combinacions_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+                if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
+                    stats_arr[thread_slot].inc_etapa();
+                }
                 stats_arr[thread_slot].inc_cost_total_valides(equip.cost);
                 stats_arr[thread_slot].inc_puntuacio_total_valides(equip.valor);
                 if (equip.valor > stats_arr[thread_slot].millor_puntuacio) {
@@ -261,9 +270,15 @@ public class Manfutc {
             } else {
                 stats_arr[thread_slot].inc_combinacions_no_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+                if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
+                    stats_arr[thread_slot].inc_etapa();
+                }
                 semafor.acquire();
                 stats.inc_combinacions_no_valides();
                 stats.inc_combinacions_evaluades();
+                if (needToPrint()) {
+                    printAllStates();
+                }
                 semafor.release();
             }
 
@@ -377,5 +392,23 @@ public class Manfutc {
             stats_arr[thread_slot].printStats();
         }
         System.out.println("--------------------");
+    }
+
+    public static boolean needToPrint() {
+        for (int i = 0; i < n_threads + 1; i++) {
+            if (stats_arr[i].etapa < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void printAllStates() {
+        printStats(-1);
+        for (int i = 0; i < n_threads + 1; i++) {
+            printStats(i);
+            stats_arr[i].etapa--;
+        }
+        stats.etapa++;
     }
 }

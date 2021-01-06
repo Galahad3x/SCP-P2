@@ -14,18 +14,24 @@ public class Estadistiques {
     public int puntuacio_total_valides;
     public int millor_puntuacio;
     public int pitjor_puntuacio;
+    public int etapa;
 
-    public void inc_combinacions_valides() { this.combinacions_valides++; }
-    public void inc_combinacions_evaluades() { this.combinacions_evaluades++; }
-    public void inc_combinacions_no_valides() { this.combinacions_no_valides++; }
+    public void inc_combinacions_valides() { this.combinacions_valides+=1; }
+    public void inc_combinacions_evaluades() { this.combinacions_evaluades+=1; }
+    public void inc_combinacions_no_valides() { this.combinacions_no_valides+=1; }
     public void inc_cost_total_valides(int cost) { this.cost_total_valides += cost; }
     public void inc_puntuacio_total_valides(int valor) { this.puntuacio_total_valides += valor; }
     public void inc_millor_puntuacio(int valor) { millor_puntuacio = valor; }
     public void inc_pitjor_puntuacio(int valor) { pitjor_puntuacio = valor; }
+    public void inc_etapa() { this.etapa++; }
 
     public void printStats() {
         Manfutc.addMessage("Vàlides totals: " + combinacions_valides + " No vàlides totals: " + combinacions_no_valides + " Totals: " + combinacions_evaluades);
         Manfutc.addMessage("Millor puntuació: " + millor_puntuacio + " Pitjor puntuació: " + pitjor_puntuacio);
-        Manfutc.addMessage("Cost mitjà: " + (cost_total_valides / combinacions_valides) + " Puntuació mitjana: " + (puntuacio_total_valides / combinacions_valides));
+        if (combinacions_valides == 0) {
+            Manfutc.addMessage("Cost mitjà: 0\n Puntuació mitjana: 0");
+        } else {
+            Manfutc.addMessage("Cost mitjà: " + (cost_total_valides / combinacions_valides) + " Puntuació mitjana: " + (puntuacio_total_valides / combinacions_valides));
+        }
     }
 }
