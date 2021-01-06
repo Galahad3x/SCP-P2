@@ -741,7 +741,8 @@ void print_stats(int slot_index){
 
 //Loop to print all stats, including global ones
 void print_all_stats(){
-	for(int i = -1; i < numero_threads + 1; i++){
+    print_stats(-1);
+	for(int i = 0; i < numero_threads + 1; i++){
 		print_stats(i);
 		stats[i].etapa--;
 	}
