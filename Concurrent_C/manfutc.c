@@ -1,4 +1,3 @@
-
 /* ---------------------------------------------------------------
 Práctica 2.
 Código fuente: manfutc.c
@@ -22,7 +21,7 @@ Grau Informàtica
 #define MAX_PLAYER_NAMES 50
 #define MAX_MARKET_LINE 256
 #define MAX_TEAM_NAME 5
-#define MAX_MESSAGE_LEN 500
+#define MAX_MESSAGE_LEN 400
 
 //F7 Lineup
 #define MAX_PORTERS 1
@@ -89,7 +88,7 @@ struct Estadistiques {
 	unsigned long puntuacio_total_valides;
 	unsigned long millor_puntuacio;
 	unsigned long pitjor_puntuacio;
-	unsigned long etapa;
+	int etapa;
 };
 
 //Global variable declarations
@@ -108,7 +107,7 @@ struct Estadistiques stats[ASSUMED_MAX_THREADS];
 struct Estadistiques globals;
 
 char msgs[ASSUMED_MAX_THREADS + 1][MAX_MESSAGE_LEN];
-char missatges[100][MAX_MESSAGE_LEN];
+char missatges[105][MAX_MESSAGE_LEN];
 volatile int numero_missatges;
 volatile int missatges_alive = 1;
 
@@ -177,7 +176,7 @@ int main(int argc, char* argvs[]){
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
 		}
-		for(int i = 0; i < ASSUMED_MAX_THREADS; i++){
+		for(int i = 0; i < numero_threads + 1; i++){
 			stats[i].combinacions_valides = 0;
 			stats[i].combinacions_evaluades = 0;
 			stats[i].combinacions_no_valides = 0;
@@ -221,6 +220,8 @@ int main(int argc, char* argvs[]){
 		trobar_millor_equip(&millor_equip, mercat.num_jugadors - 1, 0);
 		
 		printar_equip(millor_equip);
+		
+		cprintf("\033[39m");
 		
 		pthread_mutex_lock(&missatges_sync);
 		missatges_alive = 0;
@@ -609,7 +610,7 @@ void *trobar_millor_equip_conc(void *argvs){
 	
 	struct Equip equip = args.equip;
 	int index = args.index;
-	int thread_slot = args.thread_slot;
+	int thread_slot_ = args.thread_slot;
 	
 	struct JugadorsEquip agafar;
 	struct Equip agafar_equip;
@@ -626,11 +627,11 @@ void *trobar_millor_equip_conc(void *argvs){
 	afegir_jugador(&agafar_equip, mercat.jugadors[index]);
 	
 	//Recursive call: Find the best team that includes this player
-	trobar_millor_equip(&agafar_equip, index - 1, thread_slot);
+	trobar_millor_equip(&agafar_equip, index - 1, thread_slot_);
 	
 	//Return the calculated team
-	return_values[thread_slot] = agafar_equip;
-	pthread_barrier_wait(&barriers[thread_slot]);
+	return_values[thread_slot_] = agafar_equip;
+	pthread_barrier_wait(&barriers[thread_slot_]);
 	return NULL;
 }
 
@@ -685,7 +686,7 @@ void printar_jugador(struct Jugador jugador){
 //Used to print a team
 void printar_equip(struct Equip equip){
 	char msg[MAX_MESSAGE_LEN];
-	sprintf(msg,"ID de l'equip: %i\nCost total: %i\nValor: %i\n",equip.id, equip.cost, equip.valor);
+	sprintf(msg,"\033[38;2;254;75;15mID de l'equip: %i\nCost total: %i\nValor: %i\n",equip.id, equip.cost, equip.valor);
 	cprintf(msg);
 	sprintf(msg,"\nPORTERS:\n");
 	cprintf(msg);
@@ -716,7 +717,7 @@ void printar_equip(struct Equip equip){
 //Used to print stats
 void print_stats(int slot_index){
 	if (slot_index < 0){
-		sprintf(msgs[slot_index],"============= Parcials Globals =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
+		sprintf(msgs[slot_index],"\033[38;2;52;246;119m============= Parcials Globals =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
 			globals.combinacions_valides,
 			globals.combinacions_no_valides,
 			globals.combinacions_evaluades,
@@ -726,7 +727,8 @@ void print_stats(int slot_index){
 			(float) globals.puntuacio_total_valides / (float) globals.combinacions_valides);
 		cprintf(msgs[slot_index]);
 	}else{
-		sprintf(msgs[slot_index],"============= Parcials Slot %i =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
+		//\033[39m\\033[39m
+		sprintf(msgs[slot_index],"\033[38;2;123;246;2m============= Parcials Slot %i =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
 			slot_index,
 			stats[slot_index].combinacions_valides,
 			stats[slot_index].combinacions_no_valides,
@@ -746,7 +748,7 @@ void print_all_stats(){
 		print_stats(i);
 		stats[i].etapa--;
 	}
-	globals.etapa++;
+	//globals.etapa++;
 }
 
 //Loop to check if we must print global stats

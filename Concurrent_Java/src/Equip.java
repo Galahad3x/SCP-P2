@@ -61,7 +61,7 @@ public class Equip {
 
     // Prints the parameters of the team
     public void printTeam() {
-        Manfutc.addMessage("ID de l'equip: " + this.id);
+        Manfutc.addMessage("\033[38;2;254;75;15mID de l'equip: " + this.id);
         Manfutc.addMessage("Cost total: " + this.cost);
         Manfutc.addMessage("Valor: " + this.valor);
         Manfutc.addMessage("\nPORTERS: ");
