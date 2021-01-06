@@ -82,14 +82,14 @@ struct ThreadArgs {
 };
 
 struct Estadistiques {
-	int combinacions_valides;
-	int combinacions_evaluades;
-	int combinacions_no_valides;
-	int cost_total_valides;
-	int puntuacio_total_valides;
-	int millor_puntuacio;
-	int pitjor_puntuacio;
-	int etapa;
+	unsigned long combinacions_valides;
+	unsigned long combinacions_evaluades;
+	unsigned long combinacions_no_valides;
+	unsigned long cost_total_valides;
+	unsigned long puntuacio_total_valides;
+	unsigned long millor_puntuacio;
+	unsigned long pitjor_puntuacio;
+	unsigned long etapa;
 };
 
 //Global variable declarations
@@ -177,7 +177,7 @@ int main(int argc, char* argvs[]){
 		for(int i = 0; i < numero_threads; i++){
 			active_threads[i] = 0;
 		}
-		for(int i = 0; i < numero_threads + 1; i++){
+		for(int i = 0; i < ASSUMED_MAX_THREADS; i++){
 			stats[i].combinacions_valides = 0;
 			stats[i].combinacions_evaluades = 0;
 			stats[i].combinacions_no_valides = 0;
@@ -716,7 +716,7 @@ void printar_equip(struct Equip equip){
 //Used to print stats
 void print_stats(int slot_index){
 	if (slot_index < 0){
-		sprintf(msgs[slot_index],"============= Parcials Globals =============\nValides totals: %i No valides totals %i Totals %i\nMillor puntuació %i Pitjor puntuació %i\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
+		sprintf(msgs[slot_index],"============= Parcials Globals =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
 			globals.combinacions_valides,
 			globals.combinacions_no_valides,
 			globals.combinacions_evaluades,
@@ -726,7 +726,7 @@ void print_stats(int slot_index){
 			(float) globals.puntuacio_total_valides / (float) globals.combinacions_valides);
 		cprintf(msgs[slot_index]);
 	}else{
-		sprintf(msgs[slot_index],"============= Parcials Slot %i =============\nValides totals: %i No valides totals %i Totals %i\nMillor puntuació %i Pitjor puntuació %i\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
+		sprintf(msgs[slot_index],"============= Parcials Slot %i =============\nValides totals: %lu No valides totals %lu Totals %lu\nMillor puntuació %lu Pitjor puntuació %lu\nCost mitjà: %.2f Puntuació mitjana: %.2f\n-------------------------------------------\n",
 			slot_index,
 			stats[slot_index].combinacions_valides,
 			stats[slot_index].combinacions_no_valides,

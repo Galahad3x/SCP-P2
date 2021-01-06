@@ -62,28 +62,27 @@ public class Equip {
     // Prints the parameters of the team
     public void printTeam() {
         Manfutc.addMessage("ID de l'equip: " + this.id);
-        Manfutc.addMessage("Valor de l'equip: " + this.valor);
-        Manfutc.addMessage("Cost de l'equip: " + this.cost);
-        Manfutc.addMessage("Jugadors de l'equip òpim: ");
-        Manfutc.addMessage("Porters: ");
+        Manfutc.addMessage("Cost total: " + this.cost);
+        Manfutc.addMessage("Valor: " + this.valor);
+        Manfutc.addMessage("\nPORTERS: ");
         for (Jugador porter : jugadorsEquip.porters) {
             if (porter != null) {
                 Manfutc.addMessage("   - " + porter.nom);
             }
         }
-        Manfutc.addMessage("Defenses: ");
+        Manfutc.addMessage("\nDEFENSES: ");
         for (Jugador defensa : jugadorsEquip.defenses) {
             if (defensa != null) {
                 Manfutc.addMessage("   - " + defensa.nom);
             }
         }
-        Manfutc.addMessage("Migcampistes: ");
+        Manfutc.addMessage("\nCENTRES: ");
         for (Jugador migcampista : jugadorsEquip.migcampistes) {
             if (migcampista != null) {
                 Manfutc.addMessage("   - " + migcampista.nom);
             }
         }
-        Manfutc.addMessage("Davanters: ");
+        Manfutc.addMessage("\nDAVANTERS: ");
         for (Jugador davanter : jugadorsEquip.davanters) {
             if (davanter != null) {
                 Manfutc.addMessage("   - " + davanter.nom);

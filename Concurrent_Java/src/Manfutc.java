@@ -15,7 +15,7 @@ public class Manfutc {
 
     public static int id_equips = 0;
     public static int n_threads;
-    public static int M;
+    public static int M = 25000;
 
     public static Mercat mercat;
 
@@ -40,8 +40,12 @@ public class Manfutc {
         message_thread.setDaemon(true);
         message_thread.start();
 
-        if (argvs.length != 4) {
+        if (argvs.length < 3) {
             throw new IllegalArgumentException("Error while introducing the arguments: <pressupost>, <nom_mercat>, <n_threads>, <M>.");
+        }
+
+        if (argvs.length == 4) {
+            M = Integer.parseInt(argvs[3]);
         }
 
         int pressupost = Integer.parseInt(argvs[0]);
@@ -97,16 +101,15 @@ public class Manfutc {
 
         // Reads the file (mercatXj.csv)
         try {
-
-            addMessage("----------\nLlegint el fitxer: " + argvs[1]);
+            //addMessage("----------\nLlegint el fitxer: " + argvs[1]);
             mercat = LlegirFitxerJugadors(argvs[1]);
         } catch (Exception e) {
             addMessage("ERROR: Error reading the file.");
         }
         // Calculates the best team
-        addMessage("----------\nCalculant l'equip òptim...");
+        //addMessage("----------\nCalculant l'equip òptim...");
         equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1, 0);
-        addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
+        //addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
         message_thread.missatge_alive = 0;
         synchronized (lock) {
@@ -256,7 +259,7 @@ public class Manfutc {
                 }
 
                 if (t_index != -1) {
-                    threads_arr[t_index] = new ManfutcThreads(equip, index, t_index, thread_slot = (t_index + 1));
+                    threads_arr[t_index] = new ManfutcThreads(equip, index, t_index, t_index + 1);
                     threads_arr[t_index].setDaemon(true);
                     threads_arr[t_index].start();
                 } else {
@@ -385,13 +388,10 @@ public class Manfutc {
 
     public static void printStats(int thread_slot) {
         if (thread_slot < 0) {
-            addMessage("---------- Parcials globals ----------");
-            stats.printStats();
+            stats.printStats(-1);
         } else {
-            addMessage("---------- Parcial del slot: " + thread_slot + "----------");
-            stats_arr[thread_slot].printStats();
+            stats_arr[thread_slot].printStats(thread_slot);
         }
-        System.out.println("--------------------");
     }
 
     public static boolean needToPrint() {
