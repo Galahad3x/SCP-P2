@@ -1,4 +1,15 @@
 # SCP-P2
+## Anàlisi de rendiment
+> Amb 4 threads i 200 de pressupost, ja que fem servir un PC d'1 socket, 2 cores per socket i 2 threads per core
+| mercat | Secuencial_C  | Secuencial_Java | Concurrent_C_P1 | Concurrent_Java_P1 | Concurrent_C_P2 | Concurrent_Java_P2 |
+|--------|---------------|-----------------|-----------------|--------------------|-----------------|--------------------|
+| 15     | 0,116s        | 0,202s          | 0,004s          | 0,410s             | 0,039s          | 0,53s              |
+| 25     | 3,979s        | 0,8s            | 0,018s          | 0,552s             | 0,072s          | 0,232s             |
+| 50     | 3m36,661s     | 45,321s         | 0,595s          | 3,399s             | 1,973s          | 4,004s             |
+| 60     | 24m14,709s    | 5m12,662s       | 5,202s          | 18,543s            | 17,867s         | 45,023s            |
+| 75     | 2h45m52,911s  | 3h12m34,865s    | 34,422s         | 2m13,874s          | 1m29,043s       | 4m22,078s          |
+| 100    | 23h13m32,031s | 22h28m54,274s   | 4m58,954s       | 16m42,990s         | 10m39,431s      | 27m15,234s         |
+
 ## Coses a fer
  + Sincronitzacions  
  ++ ~Semafors: A les globals, el farem servir de mutex~  
