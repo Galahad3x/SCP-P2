@@ -10,6 +10,7 @@ public class Mercat {
     int NJugadors;
     Jugador[] jugadors;
 
+    // Mercat's constructor
     public Mercat() {
         this.jugadors = new Jugador[100];
     }

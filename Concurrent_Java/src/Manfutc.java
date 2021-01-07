@@ -6,7 +6,6 @@ Grau Informàtica
 78103400T Joel Farré Cortés
 ---------------------------------------------------------------*/
 
-import javax.swing.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -64,7 +63,6 @@ public class Manfutc {
         threads_arr = new ManfutcThreads[n_threads];
         threads_act = new boolean[n_threads];
         thread_return = new Equip[n_threads];
-
         for (int i = 0; i < n_threads; i++) {
             threads_arr[i] = null;
             threads_act[i] = false;
@@ -72,7 +70,6 @@ public class Manfutc {
         }
 
         stats_arr = new Estadistiques[n_threads + 1];
-
         for (int i = 0; i < n_threads + 1; i++) {
             stats_arr[i] = new Estadistiques();
             stats_arr[i].combinacions_valides = 0;
@@ -85,7 +82,6 @@ public class Manfutc {
         }
 
         stats = new Estadistiques();
-
         stats.combinacions_valides = 0;
         stats.combinacions_evaluades = 0;
         stats.combinacions_no_valides = 0;
@@ -95,7 +91,6 @@ public class Manfutc {
         stats.pitjor_puntuacio = 999999;
 
         semafor = new Semaphore(1);
-
         semafor_arr = new Semaphore[n_threads + 1];
 
         mercat = new Mercat();
@@ -112,9 +107,7 @@ public class Manfutc {
         }
 
         // Calculates the best team
-        //addMessage("----------\nCalculant l'equip òptim...");
         equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1, 0);
-        //addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
 
         message_thread.missatge_alive = 0;
@@ -200,9 +193,11 @@ public class Manfutc {
             } else {
                 stats_arr[thread_slot].inc_combinacions_no_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+
                 if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
                     stats_arr[thread_slot].inc_etapa();
                 }
+
                 semafor.acquire();
                 stats.inc_combinacions_no_valides();
                 stats.inc_combinacions_evaluades();
@@ -211,6 +206,7 @@ public class Manfutc {
                 }
                 semafor.release();
             }
+
             if (equip.jugadorsEquip.numPorters + equip.jugadorsEquip.numDefenses + equip.jugadorsEquip.numMigcampistes + equip.jugadorsEquip.numDavanters == 7) {
                 semafor.acquire();
                 stats.inc_combinacions_valides();
@@ -226,13 +222,17 @@ public class Manfutc {
                     printAllStates();
                 }
                 semafor.release();
+
                 stats_arr[thread_slot].inc_combinacions_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+
                 if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
                     stats_arr[thread_slot].inc_etapa();
                 }
+
                 stats_arr[thread_slot].inc_cost_total_valides(equip.cost);
                 stats_arr[thread_slot].inc_puntuacio_total_valides(equip.valor);
+
                 if (equip.valor > stats_arr[thread_slot].millor_puntuacio) {
                     stats_arr[thread_slot].inc_millor_puntuacio(equip.valor);
                 } else if (equip.valor < stats_arr[thread_slot].pitjor_puntuacio) {
@@ -280,9 +280,11 @@ public class Manfutc {
             } else {
                 stats_arr[thread_slot].inc_combinacions_no_valides();
                 stats_arr[thread_slot].inc_combinacions_evaluades();
+
                 if ((stats_arr[thread_slot].combinacions_evaluades % M) == 0) {
                     stats_arr[thread_slot].inc_etapa();
                 }
+
                 semafor.acquire();
                 stats.inc_combinacions_no_valides();
                 stats.inc_combinacions_evaluades();
@@ -358,9 +360,12 @@ public class Manfutc {
         }
     }
 
+    // Message thread's class
     public static class MessageThreads extends Thread{
+        // Thread's flag
         int missatge_alive;
 
+        // We override the thread's run function
         @Override
         public void run() {
             while (missatge_alive == 1) {
@@ -388,6 +393,7 @@ public class Manfutc {
         }
     }
 
+    // Function that adds a message to the queue
     public static void addMessage(String message) {
         synchronized (lock) {
             message_list.add(message);
@@ -395,6 +401,7 @@ public class Manfutc {
         }
     }
 
+    // Function that prints the stats depending on each thread slot
     public static void printStats(int thread_slot) {
         if (thread_slot < 0) {
             stats.printStats(-1);
@@ -403,6 +410,7 @@ public class Manfutc {
         }
     }
 
+    // Function that checks if the "etapa" equals one or higher, and that means that the thread has evaluated more than M combinations
     public static boolean needToPrint() {
         for (int i = 0; i < n_threads + 1; i++) {
             if (stats_arr[i].etapa < 1) {
@@ -412,6 +420,7 @@ public class Manfutc {
         return true;
     }
 
+    // Function that prints all the stats, both thread stats and the global stats
     public static void printAllStates() {
         printStats(-1);
         for (int i = 0; i < n_threads + 1; i++) {
