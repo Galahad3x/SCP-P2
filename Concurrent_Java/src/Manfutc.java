@@ -106,11 +106,13 @@ public class Manfutc {
         } catch (Exception e) {
             addMessage("ERROR: Error reading the file.");
         }
+
         // Calculates the best team
         //addMessage("----------\nCalculant l'equip òptim...");
         equipOptim = calcularEquipOptim(equip, (mercat.NJugadors) - 1, 0);
         //addMessage("---------- MILLOR EQUIP OBTINGUT ----------");
         equipOptim.printTeam();
+
         message_thread.missatge_alive = 0;
         synchronized (lock) {
             lock.notify();
