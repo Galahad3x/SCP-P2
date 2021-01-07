@@ -56,7 +56,7 @@ public class Estadistiques {
                     " Pitjor puntuació: " + pitjor_puntuacio + "\nCost mitjà: " + (cost_total_valides / combinacions_valides)
                     + " Puntuació mitjana: " + (puntuacio_total_valides / combinacions_valides) + "\n-------------------------------------------");
         }else{
-            Manfutc.addMessage("\033[38;2;123;246;2m============= Parcials Slot " + thread_slot + "=============" + "\nVàlides totals: " + combinacions_valides +
+            Manfutc.addMessage("\033[38;2;123;246;2m============= Parcials Slot " + thread_slot + " =============" + "\nVàlides totals: " + combinacions_valides +
                     " No vàlides totals: " + combinacions_no_valides
                     + " Totals: " + combinacions_evaluades + "\nMillor puntuació: " + millor_puntuacio +
                     " Pitjor puntuació: " + pitjor_puntuacio + "\nCost mitjà: " + (cost_total_valides / combinacions_valides)
