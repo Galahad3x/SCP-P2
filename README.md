@@ -1,6 +1,7 @@
 # SCP-P2
 ## Anàlisi de rendiment
-> Amb 4 threads i 200 de pressupost, ja que fem servir un PC d'1 socket, 2 cores per socket i 2 threads per core  
+Amb 4 threads i 200 de pressupost, ja que fem servir un PC d'1 socket, 2 cores per socket i 2 threads per core  
+
 | mercat | Secuencial_C  | Secuencial_Java | Concurrent_C_P1 | Concurrent_Java_P1 | Concurrent_C_P2 | Concurrent_Java_P2 |
 |--------|---------------|-----------------|-----------------|--------------------|-----------------|--------------------|
 | 15     | 0,116s        | 0,202s          | 0,004s          | 0,410s             | 0,039s          | 0,53s              |
