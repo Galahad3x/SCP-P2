@@ -6,6 +6,7 @@ Grau Informàtica
 78103400T Joel Farré Cortés
 ---------------------------------------------------------------*/
 
+import javax.swing.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -29,6 +30,7 @@ public class Manfutc {
     public static Estadistiques[] stats_arr;
 
     public static Semaphore semafor;
+    public static Semaphore[] semafor_arr;
 
     public static Queue<String> message_list = new LinkedList<>();
 
@@ -93,6 +95,8 @@ public class Manfutc {
         stats.pitjor_puntuacio = 999999;
 
         semafor = new Semaphore(1);
+
+        semafor_arr = new Semaphore[n_threads + 1];
 
         mercat = new Mercat();
         JugadorsEquip jugadorsEquip = new JugadorsEquip();
@@ -263,6 +267,7 @@ public class Manfutc {
                 if (t_index != -1) {
                     threads_arr[t_index] = new ManfutcThreads(equip, index, t_index, t_index + 1);
                     threads_arr[t_index].setDaemon(true);
+                    semafor_arr[t_index] = new Semaphore(0);
                     threads_arr[t_index].start();
                 } else {
                     agafar_equip.id = equip.id;
@@ -295,6 +300,7 @@ public class Manfutc {
             calcularEquipOptim(no_agafar_equip, index - 1, thread_slot);
 
             if (t_index != -1) {
+                semafor_arr[t_index].acquire();
                 threads_arr[t_index].join();
                 agafar_equip = thread_return[t_index].copy();
                 val_agafar = agafar_equip.valor;
@@ -348,6 +354,7 @@ public class Manfutc {
                 e.printStackTrace();
             }
             thread_return[t_index] = equip;
+            semafor_arr[t_index].release();
         }
     }
 
