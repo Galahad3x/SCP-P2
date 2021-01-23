@@ -38,7 +38,7 @@ public class Manfutc {
 
         MessageThreads message_thread = new MessageThreads();
         message_thread.missatge_alive = 1;
-        message_thread.setDaemon(true);
+        // message_thread.setDaemon(true);
         message_thread.start();
 
         if (argvs.length < 3) {
@@ -303,11 +303,11 @@ public class Manfutc {
 
             if (t_index != -1) {
                 semafor_arr[t_index].acquire();
-                threads_arr[t_index].join();
                 agafar_equip = thread_return[t_index].copy();
                 val_agafar = agafar_equip.valor;
-                threads_arr[t_index] = null;
+                threads_arr[t_index].join();
                 threads_act[t_index] = false;
+                threads_arr[t_index] = null;
             }
 
             // We check which equip fits better

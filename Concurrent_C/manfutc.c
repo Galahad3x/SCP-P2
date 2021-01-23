@@ -108,7 +108,7 @@ struct Estadistiques globals;
 
 char msgs[ASSUMED_MAX_THREADS + 1][MAX_MESSAGE_LEN];
 char missatges[105][MAX_MESSAGE_LEN];
-volatile int numero_missatges;
+volatile int numero_missatges = 0;
 volatile int missatges_alive = 1;
 
 pthread_mutex_t ids_sync = PTHREAD_MUTEX_INITIALIZER;
